@@ -1,8 +1,9 @@
 # `LairDnD`
 
 ## Database Schema Design
+![db-schema]
 
-`<insert database schema design here>`
+[db-schema]: ./images/lairdnd-schema-design.png
 
 ## API Documentation
 
