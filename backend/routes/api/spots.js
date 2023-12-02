@@ -8,6 +8,23 @@ const spot = require('../../db/models/spot.js');
 
 const router = express.Router();
 
+const spotAuthorize = async (req, res, next) => {
+    const { user } = req;
+    const spot = await Spot.findByPk(req.params.spotId);
+
+    if (!spot) {
+        return res.status(404).json({
+            message: 'Spot couldn\'t be found'
+        });
+    } else if (user.id !== spot.ownerId) {
+        return res.status(403).json({
+            message: 'Forbidden'
+        });
+    } else {
+        next();
+    }
+};
+
 router.get('/', async (req, res, next) => {
     const spots = await Spot.findAll({
         include: [
@@ -204,62 +221,52 @@ router.post('/', requireAuth, validateSpot, async (req, res, next) => {
     return res.json(newSpot);
 });
 
-router.post('/:spotId/images', requireAuth, async (req, res, next) => {
-    const spot = await Spot.findByPk(req.params.spotId);
+router.post('/:spotId/images', requireAuth, spotAuthorize, async (req, res, next) => {
     const { url, preview } = req.body;
 
-    if (!spot) {
-        return res.status(404).json({
-            message: 'Spot couldn\'t be found'
-        });
-    } else {
-        const imgObj = {};
-        const newImage = await SpotImage.create({
-            spotId: req.params.spotId,
-            url,
-            preview
-        });
+    const imgObj = {};
+    const newImage = await SpotImage.create({
+        spotId: req.params.spotId,
+        url,
+        preview
+    });
 
-        imgObj.id = newImage.id;
-        imgObj.url = newImage.url;
-        imgObj.preview = newImage.preview;
+    imgObj.id = newImage.id;
+    imgObj.url = newImage.url;
+    imgObj.preview = newImage.preview;
 
-        return res.json(imgObj);
-    }
+    return res.json(imgObj);
 });
 
-router.put('/:spotId', requireAuth, validateSpot, async (req, res, next) => {
-    const { user } = req;
+router.put('/:spotId', requireAuth, spotAuthorize, validateSpot, async (req, res, next) => {
     const { address, city, state, country, lat, lng, name, description, price } = req.body;
     const spot = await Spot.findByPk(req.params.spotId);
 
-    if (user.id !== spot.ownerId) {
-        return res.status(403).json({
-            message: 'Forbidden'
-        });
-    }
+    spot.set({
+        address: address || spot.address,
+        city: city || spot.city,
+        state: state || spot.state,
+        country: country || spot.country,
+        lat: lat || spot.lat,
+        lng: lng || spot.lng,
+        name: name || spot.name,
+        description: description || spot.description,
+        price: price || spot.price
+    });
 
-    if (!spot) {
-        return res.status(404).json({
-            message: 'Spot couldn\'t be found'
-        });
-    } else {
-        spot.set({
-            address: address || spot.address,
-            city: city || spot.city,
-            state: state || spot.state,
-            country: country || spot.country,
-            lat: lat || spot.lat,
-            lng: lng || spot.lng,
-            name: name || spot.name,
-            description: description || spot.description,
-            price: price || spot.price
-        });
+    await spot.save();
 
-        await spot.save();
-
-        return res.json(spot);
-    }
+    return res.json(spot);
 });
+
+router.delete('/:spotId', requireAuth, spotAuthorize, async (req, res, next) => {
+    const spot = await Spot.findByPk(req.params.spotId);
+
+    await spot.destroy();
+
+    return res.json({
+        message: 'Successfully deleted'
+    });
+})
 
 module.exports = router;
