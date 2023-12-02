@@ -40,11 +40,55 @@ router.get('/', async (req, res, next) => {
             }
         });
         delete spot.SpotImages;
-    })
+    });
 
     spotObj.Spots = spotsList;
 
     return res.json(spotObj)
-})
+});
+
+router.get('/current', requireAuth, async (req, res, next) => {
+    const { user } = req;
+
+    const spots = await Spot.findAll({
+        where: {
+            ownerId: user.id
+        },
+        include: [
+            {
+                model: Review
+            },
+            {
+                model: SpotImage
+            }
+        ]
+    });
+    const spotObj = {};
+    const spotsList = [];
+
+    spots.forEach(spot => {
+        spotsList.push(spot.toJSON())
+    });
+
+    spotsList.forEach(spot => {
+        let total = 0;
+        spot.Reviews.forEach(review => {
+            total += review.stars;
+        });
+        spot.avgRating = total / spot.Reviews.length;
+        delete spot.Reviews;
+
+        spot.SpotImages.forEach(image => {
+            if (image.preview === true) {
+                spot.previewImage = image.url
+            }
+        });
+        delete spot.SpotImages;
+    });
+
+    spotObj.Spots = spotsList;
+
+    return res.json(spotObj)
+});
 
 module.exports = router;
