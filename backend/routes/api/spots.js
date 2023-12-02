@@ -141,6 +141,67 @@ router.get('/:spotId', async (req, res, next) => {
     }
 });
 
+const validateSpot = [
+    check('address')
+        .exists({ checkFalsy: true })
+        .withMessage('Street address is required'),
+    check('city')
+        .exists({ checkFalsy: true })
+        .withMessage('City is required'),
+    check('state')
+        .exists({ checkFalsy: true })
+        .withMessage('State is required'),
+    check('country')
+        .exists({ checkFalsy: true })
+        .withMessage('Country is required'),
+    check('lat')
+        .custom(async val => {
+            if (!val || val < -90 || val > 90) {
+                throw new Error('Latitude must be within -90 and 90')
+            }
+        }),
+    check('lng')
+        .custom(async val => {
+            if (!val || val < -180 || val > 180) {
+                throw new Error('Longitude must be within -180 and 180')
+            }
+        }),
+    check('name')
+        .custom(async val => {
+            if (!val || val.length > 49) {
+                throw new Error('Name must be less than 50 characters')
+            }
+        }),
+    check('description')
+        .exists()
+        .withMessage('Description is required'),
+    check('price')
+        .custom(async val => {
+            if (!val || val < 0) {
+                throw new Error('Price per day must be a positive number')
+            }
+        }),
+    handleValidationErrors
+];
 
+router.post('/', requireAuth, validateSpot, async (req, res, next) => {
+    const { user } = req;
+    const { address, city, state, country, lat, lng, name, description, price } = req.body;
+
+    const newSpot = await Spot.create({
+        ownerId: user.id,
+        address,
+        city,
+        state,
+        country,
+        lat,
+        lng,
+        name,
+        description,
+        price
+    });
+
+    return res.json(newSpot)
+});
 
 module.exports = router;
