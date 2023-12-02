@@ -201,7 +201,65 @@ router.post('/', requireAuth, validateSpot, async (req, res, next) => {
         price
     });
 
-    return res.json(newSpot)
+    return res.json(newSpot);
+});
+
+router.post('/:spotId/images', requireAuth, async (req, res, next) => {
+    const spot = await Spot.findByPk(req.params.spotId);
+    const { url, preview } = req.body;
+
+    if (!spot) {
+        return res.status(404).json({
+            message: 'Spot couldn\'t be found'
+        });
+    } else {
+        const imgObj = {};
+        const newImage = await SpotImage.create({
+            spotId: req.params.spotId,
+            url,
+            preview
+        });
+
+        imgObj.id = newImage.id;
+        imgObj.url = newImage.url;
+        imgObj.preview = newImage.preview;
+
+        return res.json(imgObj);
+    }
+});
+
+router.put('/:spotId', requireAuth, validateSpot, async (req, res, next) => {
+    const { user } = req;
+    const { address, city, state, country, lat, lng, name, description, price } = req.body;
+    const spot = await Spot.findByPk(req.params.spotId);
+
+    if (user.id !== spot.ownerId) {
+        return res.status(403).json({
+            message: 'Forbidden'
+        });
+    }
+
+    if (!spot) {
+        return res.status(404).json({
+            message: 'Spot couldn\'t be found'
+        });
+    } else {
+        spot.set({
+            address: address || spot.address,
+            city: city || spot.city,
+            state: state || spot.state,
+            country: country || spot.country,
+            lat: lat || spot.lat,
+            lng: lng || spot.lng,
+            name: name || spot.name,
+            description: description || spot.description,
+            price: price || spot.price
+        });
+
+        await spot.save();
+
+        return res.json(spot);
+    }
 });
 
 module.exports = router;
