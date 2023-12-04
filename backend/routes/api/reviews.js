@@ -56,6 +56,6 @@ router.get('/current', requireAuth, async (req, res, next) => {
     reviewObj.Reviews = reviewsList;
 
     return res.json(reviewObj);
-})
+});
 
 module.exports = router;
