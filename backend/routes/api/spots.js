@@ -1,7 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const { setTokenCookie, requireAuth } = require('../../utils/auth');
-const { Spot, Review, SpotImage, User, sequelize } = require('../../db/models');
+const { Spot, Review, SpotImage, ReviewImage, User, sequelize } = require('../../db/models');
 const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation.js');
 const spot = require('../../db/models/spot.js');
@@ -24,6 +24,62 @@ const spotAuthorize = async (req, res, next) => {
         next();
     }
 };
+
+const validateSpot = [
+    check('address')
+        .exists({ checkFalsy: true })
+        .withMessage('Street address is required'),
+    check('city')
+        .exists({ checkFalsy: true })
+        .withMessage('City is required'),
+    check('state')
+        .exists({ checkFalsy: true })
+        .withMessage('State is required'),
+    check('country')
+        .exists({ checkFalsy: true })
+        .withMessage('Country is required'),
+    check('lat')
+        .custom(async val => {
+            if (!val || val < -90 || val > 90) {
+                throw new Error('Latitude must be within -90 and 90')
+            }
+        }),
+    check('lng')
+        .custom(async val => {
+            if (!val || val < -180 || val > 180) {
+                throw new Error('Longitude must be within -180 and 180')
+            }
+        }),
+    check('name')
+        .custom(async val => {
+            if (!val || val.length > 49) {
+                throw new Error('Name must be less than 50 characters')
+            }
+        }),
+    check('description')
+        .exists()
+        .withMessage('Description is required'),
+    check('price')
+        .custom(async val => {
+            if (!val || val < 0) {
+                throw new Error('Price per day must be a positive number')
+            }
+        }),
+    handleValidationErrors
+];
+
+const validateReview = [
+    check('review')
+        .exists({ checkFalsy: true })
+        .withMessage('Review text is required'),
+    check('stars')
+        .custom(async val => {
+            if (!val || val < 1 || val > 5) {
+                throw new Error('Stars must be an integer from 1 to 5')
+            }
+        }),
+    handleValidationErrors
+];
 
 router.get('/', async (req, res, next) => {
     const spots = await Spot.findAll({
@@ -158,48 +214,42 @@ router.get('/:spotId', async (req, res, next) => {
     }
 });
 
-const validateSpot = [
-    check('address')
-        .exists({ checkFalsy: true })
-        .withMessage('Street address is required'),
-    check('city')
-        .exists({ checkFalsy: true })
-        .withMessage('City is required'),
-    check('state')
-        .exists({ checkFalsy: true })
-        .withMessage('State is required'),
-    check('country')
-        .exists({ checkFalsy: true })
-        .withMessage('Country is required'),
-    check('lat')
-        .custom(async val => {
-            if (!val || val < -90 || val > 90) {
-                throw new Error('Latitude must be within -90 and 90')
+router.get('/:spotId/reviews', async (req, res, next) => {
+    const spot = await Spot.findByPk(req.params.spotId);
+
+    if (!spot) {
+        return res.status(404).json({
+            message: 'Spot couldn\'t be found'
+        });
+    }
+
+    const spotReviews = await Review.findAll({
+        where: {
+            spotId: req.params.spotId
+        },
+        include: [
+            {
+                model: User,
+                attributes: ['id', 'firstName', 'lastName']
+            },
+            {
+                model: ReviewImage,
+                attributes: ['id', 'url']
             }
-        }),
-    check('lng')
-        .custom(async val => {
-            if (!val || val < -180 || val > 180) {
-                throw new Error('Longitude must be within -180 and 180')
-            }
-        }),
-    check('name')
-        .custom(async val => {
-            if (!val || val.length > 49) {
-                throw new Error('Name must be less than 50 characters')
-            }
-        }),
-    check('description')
-        .exists()
-        .withMessage('Description is required'),
-    check('price')
-        .custom(async val => {
-            if (!val || val < 0) {
-                throw new Error('Price per day must be a positive number')
-            }
-        }),
-    handleValidationErrors
-];
+        ]
+    });
+
+    const reviewObj = {};
+    const reviewsList = [];
+
+    spotReviews.forEach(review => {
+        reviewsList.push(review.toJSON())
+    });
+
+    reviewObj.Reviews = reviewsList;
+
+    return res.json(reviewObj);
+});
 
 router.post('/', requireAuth, validateSpot, async (req, res, next) => {
     const { user } = req;
@@ -236,6 +286,41 @@ router.post('/:spotId/images', requireAuth, spotAuthorize, async (req, res, next
     imgObj.preview = newImage.preview;
 
     return res.json(imgObj);
+});
+
+router.post('/:spotId/reviews', requireAuth, validateReview, async (req, res, next) => {
+    const { user } = req;
+    const { review, stars } = req.body;
+    const spot = await Spot.findByPk(req.params.spotId, {
+        include: [
+            {
+                model: Review
+            }
+        ]
+    });
+
+    if (!spot) {
+        return res.status(404).json({
+            message: 'Spot couldn\'t be found'
+        });
+    }
+
+    spot.Reviews.forEach(review => {
+        if (review.userId === user.id) {
+            return res.status(500).json({
+                message: 'User already has a review for this spot'
+            })
+        }
+    })
+
+    const newReview = await Review.create({
+        userId: user.id,
+        spotId: spot.id,
+        review,
+        stars
+    });
+
+    return res.json(newReview);
 });
 
 router.put('/:spotId', requireAuth, spotAuthorize, validateSpot, async (req, res, next) => {
