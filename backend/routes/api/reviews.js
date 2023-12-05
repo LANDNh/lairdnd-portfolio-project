@@ -24,6 +24,19 @@ const reviewAuthorize = async (req, res, next) => {
     }
 };
 
+const validateReview = [
+    check('review')
+        .exists({ checkFalsy: true })
+        .withMessage('Review text is required'),
+    check('stars')
+        .custom(async val => {
+            if (!val || val < 1 || val > 5) {
+                throw new Error('Stars must be an integer from 1 to 5')
+            }
+        }),
+    handleValidationErrors
+];
+
 router.get('/current', requireAuth, async (req, res, next) => {
     const { user } = req;
 
@@ -103,6 +116,20 @@ router.post('/:reviewId/images', requireAuth, reviewAuthorize, async (req, res, 
     imageObj.url = newImage.url;
 
     return res.json(imageObj);
+});
+
+router.put('/:reviewId', requireAuth, reviewAuthorize, validateReview, async (req, res, next) => {
+    const { review, stars } = req.body;
+    const updatedReview = await Review.findByPk(req.params.reviewId);
+
+    updatedReview.set({
+        review: review || updatedReview.review,
+        stars: stars || updatedReview.stars
+    });
+
+    await updatedReview.save();
+
+    return res.json(updatedReview);
 });
 
 module.exports = router;
