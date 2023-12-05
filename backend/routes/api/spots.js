@@ -144,6 +144,10 @@ router.get('/current', requireAuth, async (req, res, next) => {
     });
 
     spotsList.forEach(spot => {
+        spot.lat = Number(spot.lat);
+        spot.lng = Number(spot.lng);
+        spot.price = Number(spot.price);
+
         let total = 0;
         spot.Reviews.forEach(review => {
             total += review.stars;
@@ -197,11 +201,11 @@ router.get('/:spotId', async (req, res, next) => {
             city: spot.city,
             state: spot.state,
             country: spot.country,
-            lat: spot.lat,
-            lng: spot.lng,
+            lat: Number(spot.lat),
+            lng: Number(spot.lng),
             name: spot.name,
             description: spot.description,
-            price: spot.price,
+            price: Number(spot.price),
             createdAt: spot.createdAt,
             updatedAt: spot.updatedAt,
             numReviews: await spot.countReviews(),
