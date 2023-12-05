@@ -144,6 +144,10 @@ router.get('/current', requireAuth, async (req, res, next) => {
     });
 
     spotsList.forEach(spot => {
+        spot.lat = Number(spot.lat);
+        spot.lng = Number(spot.lng);
+        spot.price = Number(spot.price);
+
         let total = 0;
         spot.Reviews.forEach(review => {
             total += review.stars;
