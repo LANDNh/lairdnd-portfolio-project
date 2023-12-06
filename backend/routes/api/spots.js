@@ -1,10 +1,11 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const { setTokenCookie, requireAuth } = require('../../utils/auth');
-const { Spot, Review, SpotImage, ReviewImage, User, sequelize } = require('../../db/models');
+const { Spot, Review, SpotImage, ReviewImage, User, Booking, sequelize } = require('../../db/models');
 const { check } = require('express-validator');
 const { handleValidationErrors } = require('../../utils/validation.js');
 const spot = require('../../db/models/spot.js');
+const booking = require('../../db/models/booking.js');
 
 const router = express.Router();
 
@@ -254,6 +255,73 @@ router.get('/:spotId/reviews', async (req, res, next) => {
 
     return res.json(reviewObj);
 });
+
+router.get('/:spotId/bookings', requireAuth, async (req, res, next) => {
+    const { user } = req;
+    const spot = await Spot.findByPk(req.params.spotId);
+
+    let bookingObj = {};
+    let bookingsList = [];
+
+    if (!spot) {
+        return res.status(404).json({
+            message: 'Spot couldn\'t be found'
+        });
+    }
+
+    if (user.id !== spot.ownerId) {
+        const bookings = await Booking.findAll({
+            where: {
+                spotId: spot.id
+            },
+            attributes: ['spotId', 'startDate', 'endDate']
+        });
+
+        bookings.forEach(booking => {
+            bookingsList.push(booking.toJSON())
+        });
+
+        bookingObj.Bookings = bookingsList;
+
+        return res.json(bookingObj);
+    } else {
+        const bookings = await Booking.findAll({
+            where: {
+                spotId: spot.id
+            },
+            include: [
+                {
+                    model: User,
+                    attributes: ['id', 'firstName', 'lastName']
+                }
+            ]
+        });
+
+        const bookingsArr = [];
+
+        bookings.forEach(booking => {
+            bookingsArr.push(booking.toJSON())
+        });
+
+        bookingsArr.forEach(booking => {
+            const bookingRemix = {
+                User: booking.User,
+                id: booking.id,
+                spotId: booking.spotId,
+                userId: booking.userId,
+                startDate: booking.startDate,
+                endDate: booking.endDate,
+                createdAt: booking.createdAt,
+                updatedAt: booking.updatedAt
+            };
+            bookingsList.push(bookingRemix);
+        });
+
+        bookingObj.Bookings = bookingsList;
+
+        return res.json(bookingObj);
+    }
+})
 
 router.post('/', requireAuth, validateSpot, async (req, res, next) => {
     const { user } = req;
