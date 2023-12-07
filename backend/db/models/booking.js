@@ -31,16 +31,10 @@ module.exports = (sequelize, DataTypes) => {
     startDate: {
       type: DataTypes.DATE,
       allowNull: false,
-      validate: {
-        isAfter: Sequelize.literal('CURRENT_TIMESTAMP')
-      }
     },
     endDate: {
       type: DataTypes.DATE,
       allowNull: false,
-      validate: {
-        isAfter: this.startDate
-      }
     }
   }, {
     sequelize,
