@@ -37,7 +37,28 @@ const pastBookingEndCheck = async (req, res, next) => {
     } else {
         next();
     }
-}
+};
+
+const bookingDeleteAuthorize = async (req, res, next) => {
+    const { user } = req;
+    const booking = await Booking.findByPk(req.params.bookingId);
+
+    if (!booking) {
+        return res.status(404).json({
+            message: 'Booking couldn\'t be found'
+        });
+    }
+
+    const spot = await Spot.findByPk(booking.spotId);
+
+    if (user.id !== booking.userId && user.id !== spot.ownerId) {
+        return res.status(403).json({
+            message: 'Forbidden'
+        });
+    } else {
+        next();
+    }
+};
 
 const validateBooking = [
     check('startDate')
@@ -202,6 +223,25 @@ router.put('/:bookingId', requireAuth, bookingAuthorize, validateBooking, pastBo
     await updatedBooking.save();
 
     return res.json(updatedBooking);
+});
+
+router.delete('/:bookingId', requireAuth, bookingDeleteAuthorize, async (req, res, next) => {
+    const now = new Date();
+    const booking = await Booking.findByPk(req.params.bookingId);
+    const bookingStart = new Date(booking.startDate);
+    const bookingEnd = new Date(booking.endDate);
+
+    if (now >= bookingStart && now <= bookingEnd) {
+        return res.status(403).json({
+            message: 'Bookings that have been started can\'t be deleted'
+        });
+    }
+
+    await booking.destroy();
+
+    return res.json({
+        message: 'Successfully deleted'
+    });
 });
 
 module.exports = router;
