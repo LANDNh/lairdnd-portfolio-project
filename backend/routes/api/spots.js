@@ -617,11 +617,11 @@ router.post('/', requireAuth, validateSpot, async (req, res, next) => {
         city,
         state,
         country,
-        lat,
-        lng,
+        lat: Number(lat),
+        lng: Number(lng),
         name,
         description,
-        price
+        price: Number(price)
     });
 
     return res.json(newSpot);
@@ -729,11 +729,11 @@ router.put('/:spotId', requireAuth, spotAuthorize, validateSpot, async (req, res
         city: city || spot.city,
         state: state || spot.state,
         country: country || spot.country,
-        lat: lat || spot.lat,
-        lng: lng || spot.lng,
+        lat: Number(lat) || Number(spot.lat),
+        lng: Number(lng) || Number(spot.lng),
         name: name || spot.name,
         description: description || spot.description,
-        price: price || spot.price
+        price: Number(price) || Number(spot.price)
     });
 
     await spot.save();
