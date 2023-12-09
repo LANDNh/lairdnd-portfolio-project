@@ -4,6 +4,7 @@ const { setTokenCookie, requireAuth } = require('../../utils/auth');
 const { Spot, Review, SpotImage, ReviewImage, User, Booking, sequelize } = require('../../db/models');
 const { check } = require('express-validator');
 const { handleValidationErrors, handleBookingConflict } = require('../../utils/validation.js');
+const { Op } = require('sequelize');
 const spot = require('../../db/models/spot.js');
 const booking = require('../../db/models/booking.js');
 
@@ -42,6 +43,34 @@ const spotUnauthorize = async (req, res, next) => {
         next();
     }
 };
+
+const noBookingAround = async (req, res, next) => {
+    const { startDate, endDate } = req.body;
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const errRes = { message: 'Sorry, this spot is already booked for the specified dates', errors: {} }
+    const spot = await Spot.findByPk(req.params.spotId, {
+        include: [
+            {
+                model: Booking
+            }
+        ]
+    });
+
+    spot.Bookings.forEach(booking => {
+        const bookingStart = new Date(booking.startDate);
+        const bookingEnd = new Date(booking.endDate);
+
+        if (bookingStart >= start && bookingEnd <= end) {
+            errRes.errors.startDate = 'Start date conflicts with an existing booking';
+            errRes.errors.endDate = 'End date conflicts with an existing booking';
+        }
+    });
+
+    if (Object.entries(errRes.errors).length) {
+        return res.status(403).json(errRes);
+    } else next();
+}
 
 const validateSpot = [
     check('address')
@@ -151,7 +180,7 @@ const bookingConflictCheck = [
             const spot = await Spot.findByPk(req.params.spotId, {
                 include: [
                     {
-                        model: Booking
+                        model: Booking,
                     }
                 ]
             });
@@ -168,8 +197,171 @@ const bookingConflictCheck = [
     handleBookingConflict
 ];
 
-router.get('/', async (req, res, next) => {
+const validateQuery = [
+    check('page')
+        .custom(async val => {
+            if (val < 1 || val > 10) {
+                throw new Error('Page must be greater than or equal to 1');
+            }
+        }),
+    check('size')
+        .custom(async val => {
+            if (val < 1 || val > 20) {
+                throw new Error('Size must be greater than or equal to 1');
+            }
+        }),
+    check('minLat')
+        .custom(async val => {
+            if (!val) return;
+            if (Number(val) && Number(val) >= -90) return;
+            throw new Error('Minimum latitude is invalid');
+
+        }),
+    check('maxLat')
+        .custom(async val => {
+            if (!val) return;
+            if (Number(val) && Number(val) <= 90) return;
+            throw new Error('Maximum latitude is invalid');
+
+        }),
+    check('minLng')
+        .custom(async val => {
+            if (!val) return;
+            if (Number(val) && Number(val) >= -180) return;
+            throw new Error('Minimum longitude is invalid');
+
+        }),
+    check('maxLng')
+        .custom(async val => {
+            if (!val) return;
+            if (Number(val) && Number(val) <= 180) return;
+            throw new Error('Maximum longitude is invalid');
+
+        }),
+    check('minPrice')
+        .custom(async val => {
+            if (!val) return;
+            if (Number(val) && Number(val) >= 0) return
+            throw new Error('Minimum price must be greater than or equal to 0');
+
+        }),
+    check('maxPrice')
+        .custom(async val => {
+            if (!val) return;
+            if (Number(val) && Number(val) >= 0) return;
+            throw new Error('Maximum price must be greater than or equal to 0');
+
+        }),
+    handleValidationErrors
+];
+
+router.get('/', validateQuery, async (req, res, next) => {
+    let { page, size } = req.query;
+    let pagination = {};
+
+    page = !page ? 1 : parseInt(page);
+    size = !size ? 20 : parseInt(size);
+
+    if (page >= 1 && page <= 10 && size >= 1 && size <= 20) {
+        pagination.limit = size;
+        pagination.offset = size * (page - 1);
+    }
+
+    const where = {};
+    const minLat = Number(req.query.minLat);
+    const maxLat = Number(req.query.maxLat);
+    const minLng = Number(req.query.minLng);
+    const maxLng = Number(req.query.maxLng);
+    const minPrice = Number(req.query.minPrice);
+    const maxPrice = Number(req.query.maxPrice);
+
+    if (minLat) {
+        if (maxLat) {
+            where.lat = {
+                [Op.between]: [minLat, maxLat]
+            };
+        } else {
+            where.lat = {
+                [Op.between]: [minLat, 90]
+            };
+        }
+    } else {
+        await Spot.findAll();
+    }
+
+    if (req.query.maxLat) {
+        if (minLat) {
+            where.lat = {
+                [Op.between]: [minLat, maxLat]
+            };
+        } else {
+            where.lat = {
+                [Op.between]: [-90, maxLat]
+            };
+        }
+    } else {
+        await Spot.findAll();
+    }
+
+    if (minLng) {
+        if (maxLng) {
+            where.lng = {
+                [Op.between]: [minLng, maxLng]
+            };
+        } else {
+            where.lng = {
+                [Op.between]: [minLng, 180]
+            };
+        }
+    } else {
+        await Spot.findAll();
+    }
+
+    if (maxLng) {
+        if (minLng) {
+            where.lng = {
+                [Op.between]: [minLng, maxLng]
+            };
+        } else {
+            where.lng = {
+                [Op.between]: [-180, maxLng]
+            };
+        }
+    } else {
+        await Spot.findAll();
+    }
+
+    if (minPrice) {
+        if (maxPrice) {
+            where.price = {
+                [Op.between]: [minPrice, maxPrice]
+            };
+        } else {
+            where.price = {
+                [Op.gte]: minPrice
+            };
+        }
+    } else {
+        await Spot.findAll();
+    }
+
+    if (maxPrice) {
+        if (minPrice) {
+            where.price = {
+                [Op.between]: [minPrice, maxPrice]
+            };
+        } else {
+            where.price = {
+                [Op.between]: [0, maxPrice]
+            };
+        }
+    } else {
+        await Spot.findAll();
+    }
+
     const spots = await Spot.findAll({
+        where,
+        ...pagination,
         include: [
             {
                 model: Review
@@ -177,7 +369,7 @@ router.get('/', async (req, res, next) => {
             {
                 model: SpotImage
             }
-        ]
+        ],
     });
     const spotObj = {};
     const spotsList = [];
@@ -203,6 +395,8 @@ router.get('/', async (req, res, next) => {
     });
 
     spotObj.Spots = spotsList;
+    spotObj.page = page;
+    spotObj.size = size;
 
     return res.json(spotObj)
 });
@@ -449,6 +643,7 @@ router.post('/:spotId/images', requireAuth, spotAuthorize, async (req, res, next
 router.post('/:spotId/reviews', requireAuth, validateReview, async (req, res, next) => {
     const { user } = req;
     const { review, stars } = req.body;
+    const errRes = {};
     const spot = await Spot.findByPk(req.params.spotId, {
         include: [
             {
@@ -465,11 +660,13 @@ router.post('/:spotId/reviews', requireAuth, validateReview, async (req, res, ne
 
     spot.Reviews.forEach(review => {
         if (review.userId === user.id) {
-            return res.status(500).json({
-                message: 'User already has a review for this spot'
-            })
+            errRes.message = 'User already has a review for this spot';
         }
-    })
+    });
+
+    if (Object.entries(errRes).length) {
+        return res.status(500).json(errRes);
+    }
 
     const newReview = await Review.create({
         userId: user.id,
@@ -481,11 +678,12 @@ router.post('/:spotId/reviews', requireAuth, validateReview, async (req, res, ne
     return res.json(newReview);
 });
 
-router.post('/:spotId/bookings', requireAuth, spotUnauthorize, validateBooking, bookingConflictCheck, async (req, res, next) => {
+router.post('/:spotId/bookings', requireAuth, spotUnauthorize, validateBooking, noBookingAround, bookingConflictCheck, async (req, res, next) => {
     const { user } = req;
     const { startDate, endDate } = req.body;
     const start = new Date(startDate);
     const end = new Date(endDate);
+    const errRes = { message: 'Sorry, this spot is already booked for the specified dates', errors: {} }
     const spot = await Spot.findByPk(req.params.spotId, {
         include: [
             {
@@ -493,6 +691,20 @@ router.post('/:spotId/bookings', requireAuth, spotUnauthorize, validateBooking, 
             }
         ]
     });
+
+    spot.Bookings.forEach(booking => {
+        const bookingStart = new Date(booking.startDate);
+        const bookingEnd = new Date(booking.endDate);
+
+        if (bookingStart >= start && bookingEnd <= end) {
+            errRes.errors.startDate = 'Start date conflicts with an existing booking';
+            errRes.errors.endDate = 'End date conflicts with an existing booking';
+        }
+    });
+
+    if (Object.entries(errRes.errors).length) {
+        return res.status(403).json(errRes);
+    }
 
     const newBooking = await Booking.create({
         spotId: spot.id,

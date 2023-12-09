@@ -4,6 +4,7 @@ const { setTokenCookie, requireAuth } = require('../../utils/auth');
 const { Spot, Review, SpotImage, ReviewImage, User, Booking, sequelize } = require('../../db/models');
 const { check } = require('express-validator');
 const { handleValidationErrors, handleBookingConflict } = require('../../utils/validation.js');
+const { Op } = require('sequelize');
 const { originAgentCluster } = require('helmet');
 
 const router = express.Router();
@@ -60,6 +61,40 @@ const bookingDeleteAuthorize = async (req, res, next) => {
     }
 };
 
+const noBookingAround = async (req, res, next) => {
+    const { startDate, endDate } = req.body;
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const errRes = { message: 'Sorry, this spot is already booked for the specified dates', errors: {} }
+    const booking = await Booking.findByPk(req.params.bookingId);
+    const spot = await Spot.findByPk(booking.spotId, {
+        include: [
+            {
+                model: Booking,
+                where: {
+                    id: {
+                        [Op.not]: booking.id
+                    }
+                }
+            }
+        ]
+    });
+
+    spot.Bookings.forEach(booking => {
+        const bookingStart = new Date(booking.startDate);
+        const bookingEnd = new Date(booking.endDate);
+
+        if (bookingStart >= start && bookingEnd <= end) {
+            errRes.errors.startDate = 'Start date conflicts with an existing booking';
+            errRes.errors.endDate = 'End date conflicts with an existing booking';
+        }
+    });
+
+    if (Object.entries(errRes.errors).length) {
+        return res.status(403).json(errRes);
+    } else next();
+}
+
 const validateBooking = [
     check('startDate')
         .custom(async val => {
@@ -96,7 +131,12 @@ const bookingConflictCheck = [
                 },
                 include: [
                     {
-                        model: Booking
+                        model: Booking,
+                        where: {
+                            id: {
+                                [Op.not]: booking.id
+                            }
+                        }
                     }
                 ]
             });
@@ -126,7 +166,12 @@ const bookingConflictCheck = [
                 },
                 include: [
                     {
-                        model: Booking
+                        model: Booking,
+                        where: {
+                            id: {
+                                [Op.not]: booking.id
+                            }
+                        }
                     }
                 ]
             });
@@ -209,7 +254,7 @@ router.get('/current', requireAuth, async (req, res, next) => {
     return res.json(bookingObj);
 });
 
-router.put('/:bookingId', requireAuth, bookingAuthorize, validateBooking, pastBookingEndCheck, bookingConflictCheck, async (req, res, next) => {
+router.put('/:bookingId', requireAuth, bookingAuthorize, validateBooking, pastBookingEndCheck, noBookingAround, bookingConflictCheck, async (req, res, next) => {
     const { startDate, endDate } = req.body;
     const start = new Date(startDate);
     const end = new Date(endDate);
