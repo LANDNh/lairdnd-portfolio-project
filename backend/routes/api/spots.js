@@ -44,6 +44,34 @@ const spotUnauthorize = async (req, res, next) => {
     }
 };
 
+const noBookingAround = async (req, res, next) => {
+    const { startDate, endDate } = req.body;
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const errRes = { message: 'Sorry, this spot is already booked for the specified dates', errors: {} }
+    const spot = await Spot.findByPk(req.params.spotId, {
+        include: [
+            {
+                model: Booking
+            }
+        ]
+    });
+
+    spot.Bookings.forEach(booking => {
+        const bookingStart = new Date(booking.startDate);
+        const bookingEnd = new Date(booking.endDate);
+
+        if (bookingStart >= start && bookingEnd <= end) {
+            errRes.errors.startDate = 'Start date conflicts with an existing booking';
+            errRes.errors.endDate = 'End date conflicts with an existing booking';
+        }
+    });
+
+    if (Object.entries(errRes.errors).length) {
+        return res.status(403).json(errRes);
+    } else next();
+}
+
 const validateSpot = [
     check('address')
         .exists({ checkFalsy: true })
@@ -152,7 +180,7 @@ const bookingConflictCheck = [
             const spot = await Spot.findByPk(req.params.spotId, {
                 include: [
                     {
-                        model: Booking
+                        model: Booking,
                     }
                 ]
             });
@@ -615,6 +643,7 @@ router.post('/:spotId/images', requireAuth, spotAuthorize, async (req, res, next
 router.post('/:spotId/reviews', requireAuth, validateReview, async (req, res, next) => {
     const { user } = req;
     const { review, stars } = req.body;
+    const errRes = {};
     const spot = await Spot.findByPk(req.params.spotId, {
         include: [
             {
@@ -631,11 +660,13 @@ router.post('/:spotId/reviews', requireAuth, validateReview, async (req, res, ne
 
     spot.Reviews.forEach(review => {
         if (review.userId === user.id) {
-            return res.status(500).json({
-                message: 'User already has a review for this spot'
-            })
+            errRes.message = 'User already has a review for this spot';
         }
-    })
+    });
+
+    if (Object.entries(errRes).length) {
+        return res.status(500).json(errRes);
+    }
 
     const newReview = await Review.create({
         userId: user.id,
@@ -647,11 +678,12 @@ router.post('/:spotId/reviews', requireAuth, validateReview, async (req, res, ne
     return res.json(newReview);
 });
 
-router.post('/:spotId/bookings', requireAuth, spotUnauthorize, validateBooking, bookingConflictCheck, async (req, res, next) => {
+router.post('/:spotId/bookings', requireAuth, spotUnauthorize, validateBooking, noBookingAround, bookingConflictCheck, async (req, res, next) => {
     const { user } = req;
     const { startDate, endDate } = req.body;
     const start = new Date(startDate);
     const end = new Date(endDate);
+    const errRes = { message: 'Sorry, this spot is already booked for the specified dates', errors: {} }
     const spot = await Spot.findByPk(req.params.spotId, {
         include: [
             {
@@ -659,6 +691,20 @@ router.post('/:spotId/bookings', requireAuth, spotUnauthorize, validateBooking, 
             }
         ]
     });
+
+    spot.Bookings.forEach(booking => {
+        const bookingStart = new Date(booking.startDate);
+        const bookingEnd = new Date(booking.endDate);
+
+        if (bookingStart >= start && bookingEnd <= end) {
+            errRes.errors.startDate = 'Start date conflicts with an existing booking';
+            errRes.errors.endDate = 'End date conflicts with an existing booking';
+        }
+    });
+
+    if (Object.entries(errRes.errors).length) {
+        return res.status(403).json(errRes);
+    }
 
     const newBooking = await Booking.create({
         spotId: spot.id,
