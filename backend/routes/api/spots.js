@@ -44,6 +44,37 @@ const spotUnauthorize = async (req, res, next) => {
     }
 };
 
+const noSameDates = async (req, res, next) => {
+    const { startDate, endDate } = req.body;
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const errRes = { message: 'Sorry, this spot is already booked for the specified dates', errors: {} }
+    const spot = await Spot.findByPk(req.params.spotId, {
+        include: [
+            {
+                model: Booking
+            }
+        ]
+    });
+
+    spot.Bookings.forEach(booking => {
+        const bookingStart = new Date(booking.startDate);
+        const bookingEnd = new Date(booking.endDate);
+
+        if (start >= (bookingStart.getTime() - 86300000) && start <= (bookingStart.getTime() + 86300000)) {
+            errRes.errors.startDate = 'Start date conflicts with an existing booking';
+        }
+
+        if (end >= (bookingEnd.getTime() - 86300000) && end <= (bookingEnd.getTime() + 86300000)) {
+            errRes.errors.endDate = 'End date conflicts with an existing booking';
+        }
+    });
+
+    if (Object.entries(errRes.errors).length) {
+        return res.status(403).json(errRes);
+    } else next();
+};
+
 const noBookingAround = async (req, res, next) => {
     const { startDate, endDate } = req.body;
     const start = new Date(startDate);
@@ -70,7 +101,7 @@ const noBookingAround = async (req, res, next) => {
     if (Object.entries(errRes.errors).length) {
         return res.status(403).json(errRes);
     } else next();
-}
+};
 
 const validateSpot = [
     check('address')
@@ -686,7 +717,7 @@ router.post('/:spotId/reviews', requireAuth, validateReview, async (req, res, ne
     return res.json(newReview);
 });
 
-router.post('/:spotId/bookings', requireAuth, spotUnauthorize, validateBooking, noBookingAround, bookingConflictCheck, async (req, res, next) => {
+router.post('/:spotId/bookings', requireAuth, spotUnauthorize, validateBooking, noSameDates, noBookingAround, bookingConflictCheck, async (req, res, next) => {
     const { user } = req;
     const { startDate, endDate } = req.body;
     const start = new Date(startDate);
@@ -699,20 +730,6 @@ router.post('/:spotId/bookings', requireAuth, spotUnauthorize, validateBooking, 
             }
         ]
     });
-
-    spot.Bookings.forEach(booking => {
-        const bookingStart = new Date(booking.startDate);
-        const bookingEnd = new Date(booking.endDate);
-
-        if (bookingStart >= start && bookingEnd <= end) {
-            errRes.errors.startDate = 'Start date conflicts with an existing booking';
-            errRes.errors.endDate = 'End date conflicts with an existing booking';
-        }
-    });
-
-    if (Object.entries(errRes.errors).length) {
-        return res.status(403).json(errRes);
-    }
 
     const newBooking = await Booking.create({
         spotId: spot.id,

@@ -61,6 +61,43 @@ const bookingDeleteAuthorize = async (req, res, next) => {
     }
 };
 
+const noSameDates = async (req, res, next) => {
+    const { startDate, endDate } = req.body;
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const errRes = { message: 'Sorry, this spot is already booked for the specified dates', errors: {} }
+    const booking = await Booking.findByPk(req.params.bookingId);
+    const spot = await Spot.findByPk(booking.spotId, {
+        include: [
+            {
+                model: Booking,
+                where: {
+                    id: {
+                        [Op.not]: booking.id
+                    }
+                }
+            }
+        ]
+    });
+
+    spot.Bookings.forEach(booking => {
+        const bookingStart = new Date(booking.startDate);
+        const bookingEnd = new Date(booking.endDate);
+
+        if (start >= (bookingStart.getTime() - 86300000) && start <= (bookingStart.getTime() + 86300000)) {
+            errRes.errors.startDate = 'Start date conflicts with an existing booking';
+        }
+
+        if (end >= (bookingEnd.getTime() - 86300000) && end <= (bookingEnd.getTime() + 86300000)) {
+            errRes.errors.endDate = 'End date conflicts with an existing booking';
+        }
+    });
+
+    if (Object.entries(errRes.errors).length) {
+        return res.status(403).json(errRes);
+    } else next();
+};
+
 const noBookingAround = async (req, res, next) => {
     const { startDate, endDate } = req.body;
     const start = new Date(startDate);
@@ -93,7 +130,7 @@ const noBookingAround = async (req, res, next) => {
     if (Object.entries(errRes.errors).length) {
         return res.status(403).json(errRes);
     } else next();
-}
+};
 
 const validateBooking = [
     check('startDate')
@@ -254,7 +291,7 @@ router.get('/current', requireAuth, async (req, res, next) => {
     return res.json(bookingObj);
 });
 
-router.put('/:bookingId', requireAuth, bookingAuthorize, validateBooking, pastBookingEndCheck, noBookingAround, bookingConflictCheck, async (req, res, next) => {
+router.put('/:bookingId', requireAuth, bookingAuthorize, validateBooking, pastBookingEndCheck, noSameDates, noBookingAround, bookingConflictCheck, async (req, res, next) => {
     const { startDate, endDate } = req.body;
     const start = new Date(startDate);
     const end = new Date(endDate);
