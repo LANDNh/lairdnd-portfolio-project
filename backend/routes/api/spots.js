@@ -617,12 +617,16 @@ router.post('/', requireAuth, validateSpot, async (req, res, next) => {
         city,
         state,
         country,
-        lat: Number(lat),
-        lng: Number(lng),
+        lat,
+        lng,
         name,
         description,
-        price: Number(price)
+        price
     });
+
+    newSpot.lat = Number(newSpot.lat);
+    newSpot.lng = Number(newSpot.lng);
+    newSpot.price = Number(newSpot.price);
 
     return res.json(newSpot);
 });
