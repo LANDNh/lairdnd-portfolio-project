@@ -29,8 +29,7 @@ const LoginFormPage = () => {
             <h1>Log In</h1>
             {errors.credential && <p>{errors.credential}</p>}
             <form onSubmit={handleSubmit}>
-                <label>
-                    Username or Email
+                <span>
                     <input
                         type="text"
                         value={credential}
@@ -38,9 +37,8 @@ const LoginFormPage = () => {
                         onChange={e => setCredential(e.target.value)}
                         required
                     />
-                </label>
-                <label>
-                    Password
+                </span>
+                <span>
                     <input
                         type="text"
                         value={password}
@@ -48,10 +46,12 @@ const LoginFormPage = () => {
                         onChange={e => setPassword(e.target.value)}
                         required
                     />
-                </label>
-                <button type='submit'>Log In</button>
-            </form>
-        </div>
+                </span>
+                <span>
+                    <button type='submit'>Log In</button>
+                </span>
+            </form >
+        </div >
     );
 }
 

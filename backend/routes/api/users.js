@@ -16,6 +16,12 @@ const validateSignup = [
         .exists({ checkFalsy: true })
         .withMessage('Username is required'),
     check('username')
+        .custom(async val => {
+            if (!val || val.length < 4 || val.length > 30) {
+                throw new Error('Username must be between 4 and 30 characters')
+            }
+        }),
+    check('username')
         .not()
         .isEmail()
         .withMessage('Username cannot be an email.'),
