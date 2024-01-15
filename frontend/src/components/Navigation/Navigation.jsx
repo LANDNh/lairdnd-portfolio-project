@@ -7,7 +7,7 @@ function Navigation({ isLoaded }) {
     const user = useSelector(state => state.session.user);
 
     const sessionLinks = user ? (
-        <li>
+        <li className='prof-button'>
             <ProfileButton user={user} />
         </li>
     ) : (
@@ -22,8 +22,8 @@ function Navigation({ isLoaded }) {
     );
 
     return (
-        <ul>
-            <li>
+        <ul className='navbar'>
+            <li className='home-link'>
                 <NavLink to="/">Home</NavLink>
             </li>
             {isLoaded && sessionLinks}
