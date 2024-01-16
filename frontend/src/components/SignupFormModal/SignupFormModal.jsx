@@ -1,12 +1,11 @@
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Navigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { useModal } from "../../context/Modal";
 import * as sessionActions from '../../store/session';
 import './SignupForm.css';
 
-const SignupFormPage = () => {
+const SignupFormModal = () => {
     const dispatch = useDispatch();
-    const user = useSelector(state => state.session.user);
     const [username, setUsername] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
@@ -14,27 +13,28 @@ const SignupFormPage = () => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [errors, setErrors] = useState({});
+    const closeModal = useModal();
 
-    if (user) return <Navigate to='/' replace={true} />;
 
     const handleSubmit = e => {
         e.preventDefault();
 
         if (password === confirmPassword) {
             setErrors({});
-            return dispatch(sessionActions.signUpUser({
-                username,
-                email,
-                firstName,
-                lastName,
-                password
-            })
-            ).catch(async res => {
-                const data = await res.json();
-                if (data?.errors) {
-                    setErrors(data.errors);
-                }
-            });
+            return dispatch(
+                sessionActions.signUpUser({
+                    username,
+                    email,
+                    firstName,
+                    lastName,
+                    password
+                })
+            )
+                .then(closeModal)
+                .catch(async res => {
+                    const data = await res.json();
+                    if (data && data?.errors) setErrors(data.errors);
+                });
         }
         return setErrors({
             ...errors,
@@ -114,4 +114,4 @@ const SignupFormPage = () => {
     )
 }
 
-export default SignupFormPage;
+export default SignupFormModal;
