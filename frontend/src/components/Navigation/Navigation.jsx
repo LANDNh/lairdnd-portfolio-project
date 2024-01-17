@@ -7,12 +7,14 @@ function Navigation({ isLoaded }) {
     const user = useSelector(state => state.session.user);
 
     return (
-        <ul>
-            <li>
-                <NavLink to="/">Home</NavLink>
+        <ul className='navbar'>
+            <li className='home'>
+                <NavLink to="/">
+                    <img src="../images/lairdnd-name-logo.png" alt="Lair DnD" />
+                </NavLink>
             </li>
             {isLoaded && (
-                <li>
+                <li className='profile'>
                     <ProfileButton user={user} />
                 </li>
             )}
