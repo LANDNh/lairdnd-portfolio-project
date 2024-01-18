@@ -1,0 +1,72 @@
+.landing-page {
+    display: flex;
+    justify-content: center;
+}
+
+.all-tiles {
+    padding-left: 7em;
+    display: flex;
+    flex-flow: row wrap;
+}
+
+.tooltip {
+    display: none;
+    position: absolute;
+    border: 1px solid black;
+    background-color: white;
+    padding: 3px;
+    cursor: pointer;
+    margin: 100px;
+}
+
+.spot-tile {
+    margin: .75em;
+    flex-basis: 20%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+}
+
+.spot-prev {
+    width: 400px;
+    height: 350px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+}
+
+.spot-prev:hover .tooltip {
+    display: block;
+}
+
+.spot-img {
+    object-fit: cover;
+}
+
+.spot-info {
+    font-size: 14pt;
+    width: 100%;
+    display: grid;
+    grid-template-areas:
+        'a b'
+        'c .'
+    ;
+}
+
+.spot-info p {
+    margin: .5em;
+}
+
+.spot-rating {
+    justify-self: end;
+}
+
+.price-per-night {
+    display: flex;
+    align-items: baseline;
+}
+
+.price {
+    font-weight: bold;
+}

@@ -41,7 +41,7 @@ function ProfileButton({ user }) {
     return (
         <>
             <button onClick={toggleMenu}>
-                ≡
+                <i className="fa-solid fa-bars"></i>
                 <i className="fas fa-user-circle" />
             </button>
             <ul className={ulClassName} ref={ulRef}>
@@ -56,13 +56,13 @@ function ProfileButton({ user }) {
                 ) : (
                     <>
                         <OpenModalMenuItem
-                            itemText="Sign Up"
-                            modalComponent={<SignupFormModal />}
+                            itemText="Log In"
+                            modalComponent={<LoginFormModal />}
                             onItemClick={closeMenu}
                         />
                         <OpenModalMenuItem
-                            itemText="Log In"
-                            modalComponent={<LoginFormModal />}
+                            itemText="Sign Up"
+                            modalComponent={<SignupFormModal />}
                             onItemClick={closeMenu}
                         />
                     </>

@@ -42,6 +42,21 @@ const SignupFormModal = () => {
         });
     };
 
+    const disableSignup = {}
+    if (!firstName ||
+        !lastName ||
+        !email ||
+        !username ||
+        username.length < 4 ||
+        !password ||
+        password.length < 6 ||
+        !confirmPassword ||
+        password !== confirmPassword) {
+        disableSignup.disabled = true;
+    } else {
+        disableSignup.disabled = false;
+    }
+
     return (
         <div className="signup-form">
             <h1>Sign Up</h1>
@@ -107,7 +122,12 @@ const SignupFormModal = () => {
                     />
                 </span>
                 <span>
-                    <button type="submit">Sign Up</button>
+                    <button
+                        type="submit"
+                        {...disableSignup}
+                    >
+                        Sign Up
+                    </button>
                 </span>
             </form>
         </div>

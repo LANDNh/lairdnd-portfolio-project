@@ -31,7 +31,10 @@ const LoginFormModal = () => {
     }
 
     const disableLogin = {}
-    if (!credential || credential.length < 4 || !password || password.length < 6) {
+    if (!credential ||
+        credential.length < 4 ||
+        !password ||
+        password.length < 6) {
         disableLogin.disabled = true;
     } else {
         disableLogin.disabled = false;

@@ -30,6 +30,13 @@
     box-shadow: 2px 2px #000000;
 }
 
+.signup-form button:disabled {
+    color: #CCCCCC;
+    border-color: #CCCCCC;
+    background-color: #FFFFFF;
+    cursor: default;
+}
+
 .signup-form h1 {
     align-self: center;
     font-size: 24pt;
