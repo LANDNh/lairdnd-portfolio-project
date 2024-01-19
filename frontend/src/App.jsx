@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Navigation from "./components/Navigation";
 import SpotsListPage from "./components/SpotsListPage";
 import * as sessionActions from './store/session';
+import SpotDetailsPage from "./components/SpotDetailsPage";
 
 function Layout() {
   const dispatch = useDispatch();
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
       {
         path: '/',
         element: <SpotsListPage />
+      },
+      {
+        path: '/spots/:spotId',
+        element: <SpotDetailsPage />
       },
     ]
   }
