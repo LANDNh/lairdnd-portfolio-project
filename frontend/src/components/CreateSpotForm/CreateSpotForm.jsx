@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createSpot } from '../../store/spotReducer';
 import './CreateSpot.css';
@@ -182,7 +182,7 @@ const CreateSpotForm = () => {
                         onChange={e => setImg4(e.target.value)}
                     />
                 </div>
-                <button>Create Spot</button>
+                <button onSubmit={handleSubmit}>Create Spot</button>
             </div>
         </div>
     )
