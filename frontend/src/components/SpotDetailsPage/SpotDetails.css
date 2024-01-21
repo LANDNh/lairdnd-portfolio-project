@@ -39,7 +39,9 @@
 .prev-img-container {
     width: 50%;
     box-sizing: border-box;
+    object-fit: cover;
     padding: 1em;
+    padding-right: 0;
     height: auto;
     float: left;
 }
@@ -47,14 +49,13 @@
 .preview-image {
     width: 100%;
     height: 100%;
-    display: block;
 }
 
 .reg-img-container {
+    object-fit: cover;
     width: 50%;
     box-sizing: border-box;
     padding: .5em;
-    height: auto;
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
@@ -71,6 +72,8 @@
 
 .spot-info {
     box-sizing: border-box;
+    display: grid;
+    grid-template-columns: 3fr 1fr;
     padding: 1em;
     padding-top: 0;
     border-bottom: 2px solid #000000;
@@ -108,7 +111,7 @@
 
 .reserve-price {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     grid-area: a;
 }
 

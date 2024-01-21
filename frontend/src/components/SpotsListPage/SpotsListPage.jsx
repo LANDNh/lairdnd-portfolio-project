@@ -31,7 +31,7 @@ const SpotsListPage = () => {
                                 className='spot-img'
                             />
                         </div>
-                        <div className='spot-info'>
+                        <div className='tile-info'>
                             <p>{spot.city}, {spot.state}</p>
                             <p className='spot-rating'>
                                 <i className='fas fa-star'></i>

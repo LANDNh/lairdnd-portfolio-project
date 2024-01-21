@@ -43,9 +43,11 @@
 
 .spot-img {
     object-fit: cover;
+    width: 100%;
+
 }
 
-.spot-info {
+.tile-info {
     font-size: 14pt;
     width: 100%;
     display: grid;
@@ -55,7 +57,7 @@
     ;
 }
 
-.spot-info p {
+.tile-info p {
     margin: .5em;
 }
 

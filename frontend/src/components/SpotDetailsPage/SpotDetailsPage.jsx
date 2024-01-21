@@ -13,6 +13,10 @@ const SpotDetailsPage = () => {
         dispatch(fetchSpot(spotId));
     }, [dispatch, spotId]);
 
+    if (!spot) {
+        return <div>womp womp</div>
+    }
+
     return (
         <div className='pseudo-root'>
             <div className='spot-details'>
@@ -47,23 +51,23 @@ const SpotDetailsPage = () => {
                     </div>
                     <div className='reserve'>
                         <div className='reserve-price'>
-                            <p className='price'>${spot.price}</p>
-                            night
+                            ${spot.price} night
                         </div>
                         <div className='review-preview'>
                             <p className='avg-review'>
                                 <i className='fas fa-star'></i>
-                                {spot.avgStarRating} · {spot.numReviews} reviews
+                                {spot.avgStarRating} · {spot.numReviews} review(s)
                             </p>
                         </div>
-                        <button>Reserve</button>
+                        <button onClick={() => window.alert('Feature Coming Soon...')}>Reserve</button>
                     </div>
                 </div>
                 <div className='spot-reviews'>
                     <h2>
                         <i className='fas fa-star'></i>
-                        {spot.avgStarRating} · {spot.numReviews} reviews
+                        {spot.avgStarRating} · {spot.numReviews} review(s)
                     </h2>
+
                 </div>
             </div>
         </div>
