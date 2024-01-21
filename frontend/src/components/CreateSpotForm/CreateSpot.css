@@ -1,0 +1,125 @@
+.create-spot-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.create-spot-form h1 {
+    align-self: start;
+    margin-bottom: 0;
+}
+
+.create-spot-form input,
+textarea {
+    font-size: 14pt;
+    background-color: #E8F0FE;
+    border: 2.5px solid #000000;
+}
+
+.create-spot-form h2 {
+    margin: 1em 0 0 0;
+}
+
+.create-spot-form p {
+    font-size: 14pt;
+    margin: .25em 0 1em 0;
+}
+
+.spot-form-els {
+    display: flex;
+    flex-direction: column;
+    max-width: 600px;
+}
+
+.spot-form-els button {
+    font-size: 14pt;
+    padding: .75em;
+    margin: 1em;
+    color: #FFFFFF;
+    background-color: #FF5A5F;
+    border: 2px solid #000000;
+    box-shadow: 2px 2px #000000;
+    cursor: pointer;
+    align-self: center;
+}
+
+.outer-container {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 2em;
+    border-bottom: 2px solid black;
+}
+
+.set-location label {
+    margin: .25em 0 .25em 0;
+    font-size: 14pt;
+    display: flex;
+    flex-direction: column;
+}
+
+.inner-container {
+    display: flex;
+}
+
+.city-state p {
+    margin: 0;
+    display: flex;
+    align-items: end;
+    width: 5%;
+}
+
+.city {
+    width: 65%;
+}
+
+.state {
+    width: 30%;
+}
+
+.lat-lng p {
+    margin: 0;
+    display: flex;
+    align-items: end;
+    width: 5%;
+}
+
+.lat {
+    width: 50%;
+}
+
+.lng {
+    width: 50%;
+}
+
+.set-description textarea {
+    box-sizing: border-box;
+    resize: none;
+    width: 100%;
+    height: 175px;
+    margin: .25em 0 .25em 0;
+}
+
+.set-name input {
+    margin: .25em 0 .25em 0;
+}
+
+.set-price div p {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 5%;
+}
+
+.set-price input {
+    margin: .25em 0 .25em 0;
+    width: 100%;
+}
+
+.set-photo input {
+    margin: .75em 0 .75em 0;
+}
+
+.set-photo.outer-container {
+    padding-bottom: 1.25em;
+}

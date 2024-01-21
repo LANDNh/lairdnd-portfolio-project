@@ -1,13 +1,15 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchSpots } from '../../store/spotReducer';
+import { fetchSpots, selectAllSpots } from '../../store/spotReducer';
 import './SpotsList.css';
 
 const SpotsListPage = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const spots = useSelector(state => state.spots.spots);
+    const spots = useSelector(selectAllSpots);
+
+    console.log(spots)
 
     useEffect(() => {
         dispatch(fetchSpots());
@@ -35,7 +37,7 @@ const SpotsListPage = () => {
                             <p>{spot.city}, {spot.state}</p>
                             <p className='spot-rating'>
                                 <i className='fas fa-star'></i>
-                                {spot.avgRating.toFixed(1)}
+                                {spot.avgRating?.toFixed(1)}
                             </p>
                             <div className='price-per-night'>
                                 <p className='price'>${spot.price}</p>

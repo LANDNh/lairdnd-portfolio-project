@@ -1,13 +1,15 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useEffect } from 'react';
-import { fetchSpot } from '../../store/spotReducer';
+import { fetchSpot, selectSpot } from '../../store/spotReducer';
 import './SpotDetails.css';
 
 const SpotDetailsPage = () => {
     const { spotId } = useParams();
     const dispatch = useDispatch();
-    const spot = useSelector(state => state.spots.spot)
+    const spot = useSelector(selectSpot(spotId))
+
+    console.log(spot)
 
     useEffect(() => {
         dispatch(fetchSpot(spotId));
@@ -25,7 +27,7 @@ const SpotDetailsPage = () => {
                     <p>{`${spot.city}, ${spot.state}, ${spot.country}`}</p>
                 </div>
                 <div className='pictures'>
-                    {spot.SpotImages.map(image => {
+                    {spot.SpotImages?.map(image => {
                         if (image.preview === true) {
                             return (
                                 <div className='prev-img-container' key={image.id}>
@@ -35,7 +37,7 @@ const SpotDetailsPage = () => {
                         }
                     })}
                     <div className='reg-img-container'>
-                        {spot.SpotImages.map(image => {
+                        {spot.SpotImages?.map(image => {
                             if (image.preview === false) {
                                 return (
                                     <img src={image.url} className='reg-image' key={image.id} />
@@ -46,7 +48,7 @@ const SpotDetailsPage = () => {
                 </div>
                 <div className='spot-info'>
                     <div className='details'>
-                        <h2>Hosted by {spot.Owner.firstName} {spot.Owner.lastName}</h2>
+                        <h2>Hosted by {spot.Owner?.firstName} {spot.Owner?.lastName}</h2>
                         <p>{spot.description}</p>
                     </div>
                     <div className='reserve'>
