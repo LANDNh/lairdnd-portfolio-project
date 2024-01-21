@@ -9,8 +9,6 @@ const SpotDetailsPage = () => {
     const dispatch = useDispatch();
     const spot = useSelector(selectSpot(spotId))
 
-    console.log(spot)
-
     useEffect(() => {
         dispatch(fetchSpot(spotId));
     }, [dispatch, spotId]);
@@ -58,7 +56,7 @@ const SpotDetailsPage = () => {
                         <div className='review-preview'>
                             <p className='avg-review'>
                                 <i className='fas fa-star'></i>
-                                {spot.avgStarRating} · {spot.numReviews} review(s)
+                                {spot.avgStarRating || 'New'} · {`${spot.numReviews} review(s)` || null}
                             </p>
                         </div>
                         <button onClick={() => window.alert('Feature Coming Soon...')}>Reserve</button>
@@ -67,7 +65,7 @@ const SpotDetailsPage = () => {
                 <div className='spot-reviews'>
                     <h2>
                         <i className='fas fa-star'></i>
-                        {spot.avgStarRating} · {spot.numReviews} review(s)
+                        {spot.avgStarRating || 'New'} · {`${spot.numReviews} review(s)` || null}
                     </h2>
 
                 </div>

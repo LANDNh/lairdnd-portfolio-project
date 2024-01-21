@@ -118,28 +118,46 @@ const validateSpot = [
         .withMessage('Country is required'),
     check('lat')
         .custom(async val => {
-            if (!val || val < -90 || val > 90) {
+            if (!val) {
+                throw new Error('Latitude is required')
+            }
+            if (val < -90 || val > 90) {
                 throw new Error('Latitude must be within -90 and 90')
             }
         }),
     check('lng')
         .custom(async val => {
-            if (!val || val < -180 || val > 180) {
+            if (!val) {
+                throw new Error('Longitude is required')
+            }
+            if (val < -180 || val > 180) {
                 throw new Error('Longitude must be within -180 and 180')
             }
         }),
     check('name')
         .custom(async val => {
-            if (!val || val.length > 49) {
+            if (!val) {
+                throw new Error('Name is required')
+            }
+            if (val.length > 49) {
                 throw new Error('Name must be less than 50 characters')
             }
         }),
     check('description')
-        .exists()
-        .withMessage('Description is required'),
+        .custom(async val => {
+            if (!val) {
+                throw new Error('Description is required')
+            }
+            if (val.length < 29) {
+                throw new Error('Description needs a minimum of 30 characters')
+            }
+        }),
     check('price')
         .custom(async val => {
-            if (!val || val < 0) {
+            if (!val) {
+                throw new Error('Price is required')
+            }
+            if (val < 0) {
                 throw new Error('Price per day must be a positive number')
             }
         }),

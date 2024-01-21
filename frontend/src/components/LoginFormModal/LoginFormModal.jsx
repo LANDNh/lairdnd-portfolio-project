@@ -14,6 +14,7 @@ const LoginFormModal = () => {
     const handleSubmit = e => {
         e.preventDefault();
         setErrors({});
+
         return dispatch(sessionActions.userLogin({ credential, password }))
             .then(closeModal)
             .catch(async res => {

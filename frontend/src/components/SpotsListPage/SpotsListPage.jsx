@@ -9,8 +9,6 @@ const SpotsListPage = () => {
     const navigate = useNavigate();
     const spots = useSelector(selectAllSpots);
 
-    console.log(spots)
-
     useEffect(() => {
         dispatch(fetchSpots());
     }, [dispatch]);

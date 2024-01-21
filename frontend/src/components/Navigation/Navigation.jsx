@@ -16,13 +16,13 @@ function Navigation({ isLoaded }) {
             {isLoaded && (
                 <li className='profile'>
                     {user && (
-                        <li className='create-spot'>
+                        <div className='create-spot'>
                             <NavLink to='/spots/new' style={{ textDecoration: 'none', fontSize: '14pt' }}>
                                 <p>
                                     Create a New Spot
                                 </p>
                             </NavLink>
-                        </li>
+                        </div>
                     )}
                     <ProfileButton user={user} />
                 </li>
