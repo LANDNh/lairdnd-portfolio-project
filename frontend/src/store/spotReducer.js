@@ -4,6 +4,7 @@ import { createSelector } from 'reselect';
 const LOAD_SPOTS = 'spot/loadSpots';
 const LOAD_SPOT = 'spot/loadSpot';
 const ADD_SPOT = 'spot/addSpot';
+// const ADD_SPOT_IMAGE = 'spot/addSpotImage'
 
 const loadSpots = spots => {
     return {
@@ -25,6 +26,14 @@ const addSpot = spot => {
         spot
     };
 };
+
+// const addSpotImage = (spotId, spotImage) => {
+//     return {
+//         type: ADD_SPOT_IMAGE,
+//         spotId,
+//         spotImage
+//     };
+// };
 
 export const fetchSpots = () => async dispatch => {
     const res = await fetch('/api/spots');
@@ -58,6 +67,19 @@ export const createSpot = spot => async dispatch => {
     }
 };
 
+// export const createSpotImage = (spotId, spotImage) => async dispatch => {
+//     const res = await csrfFetch(`api/spots/${spotId}/images`, {
+//         method: 'POST',
+//         body: JSON.stringify(spotImage)
+//     });
+
+//     if (res.ok) {
+//         const newImage = await res.json();
+//         dispatch(addSpotImage(spotId, newImage));
+//         return newImage;
+//     }
+// }
+
 const selectSpots = state => state?.spots;
 
 export const selectAllSpots = createSelector(selectSpots, spots => {
@@ -81,6 +103,16 @@ const spotReducer = (state = intialState, action) => {
         }
         case LOAD_SPOT:
             return { ...state, [action.spot.id]: action.spot };
+        case ADD_SPOT:
+            return { ...state, [action.spot.id]: action.spot };
+        // case ADD_SPOT_IMAGE:
+        //     return {
+        //         ...state,
+        //         [action.spotId]: {
+        //             ...state[action.spotId],
+        //             SpotImages: [...state[action.spotId].SpotImages, action.spotImage]
+        //         }
+        //     }
         default:
             return state;
     }

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createSpot } from '../../store/spotReducer';
 import './CreateSpot.css';
+import { createSpotImage } from '../../store/imageReducer';
 
 const CreateSpotForm = () => {
     const dispatch = useDispatch();
@@ -41,15 +42,26 @@ const CreateSpotForm = () => {
             price
         };
 
-        return dispatch(createSpot(newSpot))
-            // .then(spot => createSpotImages(spot.id))
+
+        dispatch(createSpot(newSpot))
+            .then(createdSpot => {
+                const newPrevImage = {
+                    spotId: createdSpot.id,
+                    url: previewImg,
+                    preview: true
+                };
+
+                return dispatch(createSpotImage(createdSpot.id, newPrevImage))
+                    .then(() => {
+                        navigate(`/spots/${createdSpot.id}`)
+                    })
+            })
             .catch(async res => {
                 const data = await res.json();
                 console.log(data)
                 if (data && data?.errors) {
+                    console.log(data)
                     setErrors(data.errors);
-                } else {
-                    navigate(`/spots/${newSpot.id}`);
                 }
             })
     };
