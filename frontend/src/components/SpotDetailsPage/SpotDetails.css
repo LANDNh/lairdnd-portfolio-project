@@ -126,6 +126,10 @@
     justify-content: end;
 }
 
+.avg-review span {
+    margin-left: .25em;
+}
+
 .reserve button {
     font-size: 14pt;
     padding: .75em;

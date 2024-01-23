@@ -177,17 +177,6 @@ const validateReview = [
     handleValidationErrors
 ];
 
-const validateSpotImage = [
-    check('url')
-        .custom(async val => {
-            if (!val.endsWith('.png') ||
-                !val.endsWith('.jpg') ||
-                !val.endsWith('.jpeg')) {
-                throw new Error('Image URL must end in .png, .jpg, or .jpeg')
-            }
-        })
-]
-
 const validateBooking = [
     check('startDate')
         .custom(async val => {
@@ -691,7 +680,7 @@ router.post('/', requireAuth, validateSpot, async (req, res, next) => {
     return res.json(newSpot);
 });
 
-router.post('/:spotId/images', requireAuth, spotAuthorize, validateSpotImage, async (req, res, next) => {
+router.post('/:spotId/images', requireAuth, spotAuthorize, async (req, res, next) => {
     const { url, preview } = req.body;
 
     const imgObj = {};

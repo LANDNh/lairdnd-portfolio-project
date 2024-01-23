@@ -33,13 +33,14 @@ const SignupFormModal = () => {
                 .then(closeModal)
                 .catch(async res => {
                     const data = await res.json();
-                    if (data && data?.errors) setErrors(data.errors);
+                    console.log(data)
+                    if (data && data?.errors) setErrors({ ...errors, ...data.errors });
                 });
+        } else {
+            setErrors({
+                confirmPassword: 'Confirm Password field must match the Password field'
+            });
         }
-        return setErrors({
-            ...errors,
-            confirmPassword: 'Confirm Password field must match the Password field'
-        });
     };
 
     const disableSignup = {}
@@ -50,8 +51,7 @@ const SignupFormModal = () => {
         username.length < 4 ||
         !password ||
         password.length < 6 ||
-        !confirmPassword ||
-        password !== confirmPassword) {
+        !confirmPassword) {
         disableSignup.disabled = true;
     } else {
         disableSignup.disabled = false;

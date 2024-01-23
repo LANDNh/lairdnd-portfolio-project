@@ -25,46 +25,182 @@ const CreateSpotForm = () => {
     const [img4, setImg4] = useState('');
     const [errors, setErrors] = useState({});
 
+    const handleValidation = () => {
+        const formErrors = {};
+        let formIsValid = true;
+
+        if (!address.length) {
+            formIsValid = false;
+            formErrors.address = 'Address is required'
+        }
+        if (!city.length) {
+            formIsValid = false;
+            formErrors.city = 'City is required'
+        }
+        if (!state.length) {
+            formIsValid = false;
+            formErrors.state = 'State is required'
+        }
+        if (!country.length) {
+            formIsValid = false;
+            formErrors.country = 'Country is required'
+        }
+        if (!lat.length) {
+            formIsValid = false;
+            formErrors.lat = 'Latitude is required'
+        }
+        if (lat.length) {
+            if (lat < -90 || lat > 90) {
+                formIsValid = false;
+                formErrors.lat = 'Latitude must be between -90 and 90'
+            }
+        }
+        if (!lng.length) {
+            formIsValid = false;
+            formErrors.lng = 'Longitude is required'
+        }
+        if (lng.length) {
+            if (lng < -180 || lng > 180) {
+                formIsValid = false;
+                formErrors.lng = 'Longitude must be between -180 and 180'
+            }
+        }
+        if (!name.length) {
+            formIsValid = false;
+            formErrors.name = 'Name is required'
+        }
+        if (!description.length) {
+            formIsValid = false;
+            formErrors.description = 'Description is required'
+        }
+        if (description.length) {
+            if (description.length < 30) {
+                formIsValid = false;
+                formErrors.description = 'Description needs a minimum of 30 characters'
+            }
+        }
+        if (!price.length) {
+            formIsValid = false;
+            formErrors.price = 'Price is required'
+        }
+        if (price.length) {
+            if (price < 1) {
+                formIsValid = false;
+                formErrors.price = 'Price must be a positive number'
+            }
+        }
+        if (!previewImg.length) {
+            formIsValid = false;
+            formErrors.previewImg = 'Preview image is required'
+        }
+        if (previewImg.length) {
+            if (!previewImg.endsWith('.png') &&
+                !previewImg.endsWith('.jpg') &&
+                !previewImg.endsWith('.jpeg')) {
+                formIsValid = false;
+                formErrors.previewImg = 'Image URL must end in .png, .jpg, or .jpeg'
+            }
+        }
+        if (img1.length) {
+            if (!img1.endsWith('.png') &&
+                !img1.endsWith('.jpg') &&
+                !img1.endsWith('.jpeg')) {
+                formIsValid = false;
+                formErrors.img1 = 'Image URL must end in .png, .jpg, or .jpeg'
+            }
+        }
+        if (img2.length) {
+            if (!img2.endsWith('.png') &&
+                !img2.endsWith('.jpg') &&
+                !img2.endsWith('.jpeg')) {
+                formIsValid = false;
+                formErrors.img2 = 'Image URL must end in .png, .jpg, or .jpeg'
+            }
+        }
+        if (img3.length) {
+            if (!img3.endsWith('.png') &&
+                !img3.endsWith('.jpg') &&
+                !img3.endsWith('.jpeg')) {
+                formIsValid = false;
+                formErrors.img3 = 'Image URL must end in .png, .jpg, or .jpeg'
+            }
+        }
+        if (img4.length) {
+            if (!img4.endsWith('.png') &&
+                !img4.endsWith('.jpg') &&
+                !img4.endsWith('.jpeg')) {
+                formIsValid = false;
+                formErrors.img4 = 'Image URL must end in .png, .jpg, or .jpeg'
+            }
+        }
+
+        setErrors(formErrors);
+        return formIsValid;
+    }
+
     const handleSubmit = e => {
         e.preventDefault();
-        setErrors({});
 
-        const newSpot = {
-            ownerId: user.id,
-            address,
-            city,
-            state,
-            country,
-            lat,
-            lng,
-            name,
-            description,
-            price
-        };
+        if (handleValidation()) {
+            const newSpot = {
+                ownerId: user.id,
+                address,
+                city,
+                state,
+                country,
+                lat,
+                lng,
+                name,
+                description,
+                price
+            };
 
-
-        dispatch(createSpot(newSpot))
-            .then(createdSpot => {
-                const newPrevImage = {
-                    spotId: createdSpot.id,
-                    url: previewImg,
-                    preview: true
-                };
-
-                return dispatch(createSpotImage(createdSpot.id, newPrevImage))
-                    .then(() => {
-                        navigate(`/spots/${createdSpot.id}`)
-                    })
-            })
-            .catch(async res => {
-                const data = await res.json();
-                console.log(data)
-                if (data && data?.errors) {
-                    console.log(data)
-                    setErrors(data.errors);
-                }
-            })
-    };
+            return dispatch(createSpot(newSpot))
+                .then(createdSpot => {
+                    const newPrevImage = {
+                        spotId: createdSpot.id,
+                        url: previewImg,
+                        preview: true
+                    };
+                    return dispatch(createSpotImage(createdSpot.id, newPrevImage))
+                        .then(() => {
+                            if (img1) {
+                                const newImage1 = {
+                                    spotId: createdSpot.id,
+                                    url: img1,
+                                    preview: false
+                                };
+                                dispatch(createSpotImage(createdSpot.id, newImage1))
+                            }
+                            if (img2) {
+                                const newImage2 = {
+                                    spotId: createdSpot.id,
+                                    url: img2,
+                                    preview: false
+                                };
+                                dispatch(createSpotImage(createdSpot.id, newImage2))
+                            }
+                            if (img3) {
+                                const newImage3 = {
+                                    spotId: createdSpot.id,
+                                    url: img3,
+                                    preview: false
+                                };
+                                dispatch(createSpotImage(createdSpot.id, newImage3))
+                            }
+                            if (img4) {
+                                const newImage4 = {
+                                    spotId: createdSpot.id,
+                                    url: img4,
+                                    preview: false
+                                };
+                                dispatch(createSpotImage(createdSpot.id, newImage4))
+                            }
+                            navigate(`/spots/${createdSpot.id}`)
+                        })
+                })
+        }
+    }
 
     if (!user) {
         navigate('/');
@@ -197,26 +333,41 @@ const CreateSpotForm = () => {
                         value={previewImg}
                         onChange={e => setPreviewImg(e.target.value)}
                     />
+                    <div className='spot-label'>
+                        {errors.previewImg && <p className='spot-error'>{errors.previewImg}</p>}
+                    </div>
                     <input
                         placeholder='Image URL'
                         value={img1}
                         onChange={e => setImg1(e.target.value)}
                     />
+                    <div className='spot-label'>
+                        {errors.img1 && <p className='spot-error'>{errors.img1}</p>}
+                    </div>
                     <input
                         placeholder='Image URL'
                         value={img2}
                         onChange={e => setImg2(e.target.value)}
                     />
+                    <div className='spot-label'>
+                        {errors.img2 && <p className='spot-error'>{errors.img2}</p>}
+                    </div>
                     <input
                         placeholder='Image URL'
                         value={img3}
                         onChange={e => setImg3(e.target.value)}
                     />
+                    <div className='spot-label'>
+                        {errors.img3 && <p className='spot-error'>{errors.img3}</p>}
+                    </div>
                     <input
                         placeholder='Image URL'
                         value={img4}
                         onChange={e => setImg4(e.target.value)}
                     />
+                    <div className='spot-label'>
+                        {errors.img4 && <p className='spot-error'>{errors.img4}</p>}
+                    </div>
                 </div>
                 <button>Create Spot</button>
             </form>

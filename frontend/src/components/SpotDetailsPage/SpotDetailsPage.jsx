@@ -56,7 +56,11 @@ const SpotDetailsPage = () => {
                         <div className='review-preview'>
                             <p className='avg-review'>
                                 <i className='fas fa-star'></i>
-                                {spot.avgStarRating || 'New'} · {`${spot.numReviews} review(s)` || null}
+                                {spot.avgStarRating || 'New'} {spot.numReviews !== 0 && (
+                                    <span>
+                                        · {spot.numReviews} {spot.numReviews === 1 ? 'review' : 'reviews'}
+                                    </span>
+                                )}
                             </p>
                         </div>
                         <button onClick={() => window.alert('Feature Coming Soon...')}>Reserve</button>
@@ -65,7 +69,11 @@ const SpotDetailsPage = () => {
                 <div className='spot-reviews'>
                     <h2>
                         <i className='fas fa-star'></i>
-                        {spot.avgStarRating || 'New'} · {`${spot.numReviews} review(s)` || null}
+                        {spot.avgStarRating || 'New'} {spot.numReviews !== 0 && (
+                            <span>
+                                · {spot.numReviews} {spot.numReviews === 1 ? 'review' : 'reviews'}
+                            </span>
+                        )}
                     </h2>
 
                 </div>
