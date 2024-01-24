@@ -44,6 +44,7 @@
 }
 
 .signup-error {
+    margin: 0.25em;
     color: #FF5A5F;
     align-self: flex-start;
 }

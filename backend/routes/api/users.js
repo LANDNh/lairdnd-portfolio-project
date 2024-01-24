@@ -12,6 +12,14 @@ const validateSignup = [
         .exists({ checkFalsy: true })
         .isEmail()
         .withMessage('Invalid email'),
+    check('email')
+        .custom(async val => {
+            const user = await User.findOne({ where: { email: val } });
+
+            if (user) {
+                throw new Error('User with that email already exists')
+            }
+        }),
     check('username')
         .exists({ checkFalsy: true })
         .withMessage('Username is required'),
@@ -25,6 +33,14 @@ const validateSignup = [
         .not()
         .isEmail()
         .withMessage('Username cannot be an email.'),
+    check('username')
+        .custom(async val => {
+            const user = await User.findOne({ where: { username: val } });
+
+            if (user) {
+                throw new Error('User with that username already exists')
+            }
+        }),
     check('firstName')
         .exists({ checkFalsy: true })
         .withMessage('First Name is required'),

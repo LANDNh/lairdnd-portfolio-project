@@ -15,32 +15,33 @@ const SignupFormModal = () => {
     const [errors, setErrors] = useState({});
     const closeModal = useModal();
 
-
     const handleSubmit = e => {
         e.preventDefault();
+        let formErrors = {};
 
-        if (password === confirmPassword) {
-            setErrors({});
-            return dispatch(
-                sessionActions.signUpUser({
-                    username,
-                    email,
-                    firstName,
-                    lastName,
-                    password
-                })
-            )
-                .then(closeModal)
-                .catch(async res => {
-                    const data = await res.json();
-                    console.log(data)
-                    if (data && data?.errors) setErrors({ ...errors, ...data.errors });
-                });
-        } else {
-            setErrors({
-                confirmPassword: 'Confirm Password field must match the Password field'
-            });
+        if (password !== confirmPassword) {
+            formErrors.confirmPassword = 'Confirm Password field must match the Password field'
         }
+
+        return dispatch(
+            sessionActions.signUpUser({
+                username,
+                email,
+                firstName,
+                lastName,
+                password
+            })
+        )
+            .then(closeModal)
+            .catch(async res => {
+                const data = await res.json();
+                console.log(data)
+                if (data && data?.errors) {
+                    formErrors = { ...formErrors, ...data.errors }
+                    setErrors(formErrors);
+                }
+            });
+
     };
 
     const disableSignup = {}
