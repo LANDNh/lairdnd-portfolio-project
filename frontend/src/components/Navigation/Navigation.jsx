@@ -7,12 +7,23 @@ function Navigation({ isLoaded }) {
     const user = useSelector(state => state.session.user);
 
     return (
-        <ul>
-            <li>
-                <NavLink to="/">Home</NavLink>
+        <ul className='navbar'>
+            <li className='home'>
+                <NavLink to="/">
+                    <img src="../images/lairdnd-name-logo.png" alt="Lair DnD" />
+                </NavLink>
             </li>
             {isLoaded && (
-                <li>
+                <li className='profile'>
+                    {user && (
+                        <div className='create-spot'>
+                            <NavLink to='/spots/new' style={{ textDecoration: 'none', fontSize: '14pt' }}>
+                                <p>
+                                    Create a New Spot
+                                </p>
+                            </NavLink>
+                        </div>
+                    )}
                     <ProfileButton user={user} />
                 </li>
             )}

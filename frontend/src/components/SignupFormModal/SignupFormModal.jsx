@@ -15,32 +15,48 @@ const SignupFormModal = () => {
     const [errors, setErrors] = useState({});
     const closeModal = useModal();
 
-
     const handleSubmit = e => {
         e.preventDefault();
+        let formErrors = {};
 
-        if (password === confirmPassword) {
-            setErrors({});
-            return dispatch(
-                sessionActions.signUpUser({
-                    username,
-                    email,
-                    firstName,
-                    lastName,
-                    password
-                })
-            )
-                .then(closeModal)
-                .catch(async res => {
-                    const data = await res.json();
-                    if (data && data?.errors) setErrors(data.errors);
-                });
+        if (password !== confirmPassword) {
+            formErrors.confirmPassword = 'Confirm Password field must match the Password field'
         }
-        return setErrors({
-            ...errors,
-            confirmPassword: 'Confirm Password field must match the Password field'
-        });
+
+        return dispatch(
+            sessionActions.signUpUser({
+                username,
+                email,
+                firstName,
+                lastName,
+                password
+            })
+        )
+            .then(closeModal)
+            .catch(async res => {
+                const data = await res.json();
+                console.log(data)
+                if (data && data?.errors) {
+                    formErrors = { ...formErrors, ...data.errors }
+                    setErrors(formErrors);
+                }
+            });
+
     };
+
+    const disableSignup = {}
+    if (!firstName ||
+        !lastName ||
+        !email ||
+        !username ||
+        username.length < 4 ||
+        !password ||
+        password.length < 6 ||
+        !confirmPassword) {
+        disableSignup.disabled = true;
+    } else {
+        disableSignup.disabled = false;
+    }
 
     return (
         <div className="signup-form">
@@ -107,7 +123,12 @@ const SignupFormModal = () => {
                     />
                 </span>
                 <span>
-                    <button type="submit">Sign Up</button>
+                    <button
+                        type="submit"
+                        {...disableSignup}
+                    >
+                        Sign Up
+                    </button>
                 </span>
             </form>
         </div>

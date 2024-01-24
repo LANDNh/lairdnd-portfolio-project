@@ -1,11 +1,4 @@
-#root {
-    display: flex;
-    justify-content: center;
-}
-
 .login-form {
-    border: 1px solid black;
-    border-radius: 15px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -35,10 +28,33 @@
     background-color: #FF5A5F;
     border: 2px solid #000000;
     box-shadow: 2px 2px #000000;
+    cursor: pointer;
+}
+
+.login-form button:disabled {
+    color: #CCCCCC;
+    border-color: #CCCCCC;
+    background-color: #FFFFFF;
+    cursor: default;
 }
 
 .login-form h1 {
     align-self: center;
     font-size: 24pt;
     font-weight: bold;
+}
+
+.login-error {
+    color: #FF5A5F;
+}
+
+.demo-login {
+    font-size: 14pt;
+    color: #00525E;
+    text-decoration: underline;
+    justify-content: center;
+}
+
+.demo-login p {
+    cursor: pointer;
 }

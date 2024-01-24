@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import * as sessionActions from '../../store/session';
 import OpenModalMenuItem from './OpenModalMenuItem';
@@ -7,6 +8,7 @@ import SignupFormModal from '../SignupFormModal';
 
 function ProfileButton({ user }) {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [showMenu, setShowMenu] = useState(false);
     const ulRef = useRef();
 
@@ -34,6 +36,7 @@ function ProfileButton({ user }) {
         e.preventDefault();
         dispatch(sessionActions.logoutUser());
         closeMenu();
+        navigate('/');
     };
 
     const ulClassName = "profile-dropdown" + (showMenu ? "" : " hidden");
@@ -41,15 +44,15 @@ function ProfileButton({ user }) {
     return (
         <>
             <button onClick={toggleMenu}>
+                <i className="fa-solid fa-bars"></i>
                 <i className="fas fa-user-circle" />
             </button>
             <ul className={ulClassName} ref={ulRef}>
                 {user ? (
                     <>
-                        <li>{user.username}</li>
-                        <li>{user.firstName} {user.lastName}</li>
-                        <li>{user.email}</li>
-                        <li>
+                        <li className='logged-in'>Hello, {user.firstName}</li>
+                        <li className='logged-in'>{user.email}</li>
+                        <li className='logout-button logged-in'>
                             <button onClick={logout}>Log Out</button>
                         </li>
                     </>

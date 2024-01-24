@@ -9,7 +9,7 @@ const OpenModalMenuItem = ({ modalComponent, itemText, onItemClick, onModalClose
         if (typeof onItemClick === 'function') onItemClick();
     };
 
-    return <li onClick={onClick}>{itemText}</li>
+    return <li className="logged-out" onClick={onClick}>{itemText}</li>
 }
 
 export default OpenModalMenuItem;

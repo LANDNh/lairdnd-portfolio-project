@@ -14,6 +14,7 @@ const LoginFormModal = () => {
     const handleSubmit = e => {
         e.preventDefault();
         setErrors({});
+
         return dispatch(sessionActions.userLogin({ credential, password }))
             .then(closeModal)
             .catch(async res => {
@@ -22,11 +23,32 @@ const LoginFormModal = () => {
             });
     };
 
+    const demoLogin = () => {
+        return dispatch(sessionActions.userLogin({
+            credential: 'Demo1',
+            password: 'password1'
+        }))
+            .then(closeModal)
+    }
+
+    const disableLogin = {}
+    if (!credential ||
+        credential.length < 4 ||
+        !password ||
+        password.length < 6) {
+        disableLogin.disabled = true;
+    } else {
+        disableLogin.disabled = false;
+    }
+
+
     return (
         <div className='login-form'>
             <h1>Log In</h1>
-            {errors.credential && <p>{errors.credential}</p>}
             <form onSubmit={handleSubmit}>
+                <span>
+                    {errors.credential && <p className='login-error'>{errors.credential}</p>}
+                </span>
                 <span>
                     <input
                         type="text"
@@ -46,7 +68,15 @@ const LoginFormModal = () => {
                     />
                 </span>
                 <span>
-                    <button type='submit'>Log In</button>
+                    <button
+                        type='submit'
+                        {...disableLogin}
+                    >
+                        Log In
+                    </button>
+                </span>
+                <span className='demo-login'>
+                    <p onClick={demoLogin}>Log in as Demo User</p>
                 </span>
             </form >
         </div >
