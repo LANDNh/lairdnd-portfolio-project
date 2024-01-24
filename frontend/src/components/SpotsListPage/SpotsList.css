@@ -4,22 +4,29 @@
 }
 
 .all-tiles {
-    padding-left: 7em;
+    /* padding-left: 7em; */
+    padding: 0;
     display: flex;
     flex-flow: row wrap;
+    justify-content: center;
+    /* justify-content: space-around; */
 }
 
 .tooltip {
+    font-size: 14pt;
+    width: auto;
     display: none;
     position: absolute;
     border: 1px solid black;
+    border-radius: 10px;
     background-color: white;
-    padding: 3px;
+    padding: .5em;
     cursor: pointer;
-    margin: 100px;
+    margin: 9em;
 }
 
 .spot-tile {
+    min-width: 400px;
     margin: .75em;
     margin-bottom: 1.5em;
     flex-basis: 20%;
@@ -27,6 +34,9 @@
     flex-direction: column;
     align-items: center;
     cursor: pointer;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 1px 1px 10px black;
 }
 
 .spot-prev {
@@ -39,6 +49,7 @@
 
 .spot-prev:hover .tooltip {
     display: block;
+    text-align: center;
 }
 
 .spot-img {
