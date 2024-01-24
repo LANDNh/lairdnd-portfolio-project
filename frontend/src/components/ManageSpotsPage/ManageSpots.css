@@ -63,6 +63,7 @@
     grid-template-areas:
         'a b'
         'c .'
+        'd .'
     ;
 }
 
@@ -81,4 +82,34 @@
 
 .price {
     font-weight: bold;
+}
+
+.manage-header {
+    margin: .5em 5em;
+}
+
+.manage-header h1 {
+    margin-bottom: .25em;
+}
+
+.manage-header button {
+    font-size: 14pt;
+    color: white;
+    background-color: #999999;
+    box-shadow: 2px 2px black;
+    cursor: pointer;
+}
+
+.update-delete {
+    margin: .5em;
+    grid-area: d;
+}
+
+.update-delete button {
+    margin-right: 1em;
+    font-size: 14pt;
+    color: white;
+    background-color: #999999;
+    box-shadow: 2px 2px black;
+    cursor: pointer;
 }
