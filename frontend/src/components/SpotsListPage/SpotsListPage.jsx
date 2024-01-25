@@ -38,7 +38,7 @@ const SpotsListPage = () => {
                                 {spot.avgRating?.toFixed(1) || 'New'}
                             </p>
                             <div className='price-per-night'>
-                                <p className='price'>${spot.price}</p>
+                                <p className='price'><i className="fa-solid fa-coins"></i>{spot.price}</p>
                                 night
                             </div>
                         </div>

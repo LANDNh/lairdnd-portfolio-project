@@ -333,7 +333,7 @@ const CreateSpotForm = () => {
                     <h2>Set a base price for your spot</h2>
                     <p>Competitive pricing can help your listing stand out and rank higher in search results.</p>
                     <div className='inner-container'>
-                        <p className='dollar'>$</p>
+                        <p className='dollar'><i className="fa-solid fa-coins"></i></p>
                         <input
                             placeholder='Price per night (Silver Pieces)'
                             value={price}

@@ -66,7 +66,7 @@ const SpotDetailsPage = () => {
                     </div>
                     <div className='reserve'>
                         <div className='reserve-price'>
-                            ${spot.price} night
+                            <i className="fa-solid fa-coins"></i> {spot.price} night
                         </div>
                         <div className='review-preview'>
                             <p className='avg-review'>
