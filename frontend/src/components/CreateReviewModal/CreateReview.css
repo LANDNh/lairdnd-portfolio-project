@@ -1,0 +1,58 @@
+.review-form {
+    padding: 2em;
+    padding-top: 0;
+    text-align: center;
+}
+
+.review-form form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.review-input {
+    box-sizing: border-box;
+    resize: none;
+    width: 100%;
+    height: 150px;
+}
+
+.star-rating {
+    margin: 1em 0;
+}
+
+.star {
+    font-size: 14pt;
+    cursor: pointer;
+    color: white;
+    text-shadow: 0 0 2px #000000;
+    margin: .25em;
+}
+
+.star.selected {
+    color: #000000;
+}
+
+.submit-review {
+    font-size: 14pt;
+    padding: .75em;
+    width: 100%;
+    color: #FFFFFF;
+    background-color: #FF5A5F;
+    border: 2px solid #000000;
+    box-shadow: 2px 2px #000000;
+    cursor: pointer;
+}
+
+.submit-review:disabled {
+    color: #CCCCCC;
+    border-color: #CCCCCC;
+    background-color: #FFFFFF;
+    cursor: default;
+}
+
+.review-error {
+    color: #FF5A5F;
+    margin: 0;
+    margin-bottom: 1em;
+}

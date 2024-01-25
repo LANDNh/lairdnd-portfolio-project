@@ -32,6 +32,12 @@ function ProfileButton({ user }) {
 
     const closeMenu = () => setShowMenu(false);
 
+    const manageSpots = (e) => {
+        e.preventDefault();
+        closeMenu();
+        navigate('/spots/current');
+    }
+
     const logout = (e) => {
         e.preventDefault();
         dispatch(sessionActions.logoutUser());
@@ -52,6 +58,7 @@ function ProfileButton({ user }) {
                     <>
                         <li className='logged-in'>Hello, {user.firstName}</li>
                         <li className='logged-in'>{user.email}</li>
+                        <li className='manage-spots' onClick={manageSpots}>Manage Spots</li>
                         <li className='logout-button logged-in'>
                             <button onClick={logout}>Log Out</button>
                         </li>

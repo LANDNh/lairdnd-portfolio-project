@@ -87,15 +87,18 @@
 }
 
 .details h2 {
-    margin: 0;
+    margin-top: 0;
+    margin-bottom: .5em;
     font-size: 18pt;
 }
 
 .details p {
+    font-size: 14pt;
     margin: 0;
 }
 
 .reserve {
+    font-size: 14pt;
     width: 15em;
     box-sizing: content-box;
     padding: 1em;
@@ -145,4 +148,44 @@
 
 .spot-reviews {
     align-self: start;
+}
+
+.spot-reviews h2 {
+    margin: .5em 0;
+}
+
+.review {
+    margin-bottom: 1em;
+    padding-bottom: 1em;
+    border-bottom: 1px solid #CCCCCC;
+}
+
+.review p {
+    font-size: 14pt;
+    margin: .25em;
+}
+
+.review-date {
+    color: #CCCCCC;
+}
+
+.review-delete {
+    list-style: none;
+    font-size: 14pt;
+    color: #FFFFFF;
+    background-color: #999999;
+    border: 2px solid #000000;
+    box-shadow: 2px 2px #000000;
+    cursor: pointer;
+}
+
+.new-review {
+    list-style: none;
+    font-size: 14pt;
+    color: #FFFFFF;
+    background-color: #999999;
+    border: 2px solid #000000;
+    box-shadow: 2px 2px #000000;
+    cursor: pointer;
+    margin-bottom: 1em;
 }

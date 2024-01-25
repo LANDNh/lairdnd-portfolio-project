@@ -2,16 +2,31 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import { fetchSpot, selectSpot } from '../../store/spotReducer';
+import { fetchSpotReviews } from '../../store/reviewReducer';
+import DeleteReviewModal from '../DeleteReviewModal';
+import OpenModalMenuItem from '../Navigation/OpenModalMenuItem';
+import CreateReviewModal from '../CreateReviewModal';
 import './SpotDetails.css';
+import { setReviewSubmitted } from '../../store/reviewSubmitted';
 
 const SpotDetailsPage = () => {
     const { spotId } = useParams();
     const dispatch = useDispatch();
-    const spot = useSelector(selectSpot(spotId))
+    const user = useSelector(state => state.session.user);
+    const spot = useSelector(selectSpot(spotId));
+    const reviews = useSelector(state => state.reviews);
+    const reviewSubmitted = useSelector(state => state.reviewSubmitted);
 
     useEffect(() => {
         dispatch(fetchSpot(spotId));
-    }, [dispatch, spotId]);
+    }, [dispatch, spotId, reviews]);
+
+    useEffect(() => {
+        dispatch(fetchSpotReviews(spotId));
+        if (reviewSubmitted) {
+            dispatch(setReviewSubmitted(false));
+        }
+    }, [dispatch, spotId, reviewSubmitted])
 
     if (!spot) {
         return <div>womp womp</div>
@@ -75,7 +90,47 @@ const SpotDetailsPage = () => {
                             </span>
                         )}
                     </h2>
-
+                    {spotId && spot.ownerId !== user.id && (
+                        <button className='new-review'
+                            onClick={e => {
+                                e.stopPropagation();
+                            }}>
+                            <OpenModalMenuItem
+                                itemText='Post Your Review'
+                                modalComponent={<CreateReviewModal spotId={spotId} />}
+                            />
+                        </button>
+                    )}
+                    {
+                        reviews && Object.values(reviews).length === 0 && spot.ownerId !== user.id ? (
+                            <p>Be the first to review!</p>
+                        ) : (
+                            Object.values(reviews).sort((a, b) => b.id - a.id).map(review => {
+                                const date = new Date(review.createdAt);
+                                const formatedDate = date.toLocaleString('default', { month: 'long', year: 'numeric' });
+                                return (
+                                    <div className='review' key={review.id}>
+                                        <p className='review-name'>{review.User?.firstName}</p>
+                                        <p className='review-date'>{formatedDate}</p>
+                                        <p className='review-text'>{review.review}</p>
+                                        {review.userId === user.id && (
+                                            <div>
+                                                <button className='review-delete'
+                                                    onClick={e => {
+                                                        e.stopPropagation();
+                                                    }}>
+                                                    <OpenModalMenuItem
+                                                        itemText='Delete'
+                                                        modalComponent={<DeleteReviewModal review={review} />}
+                                                    />
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                )
+                            })
+                        )
+                    }
                 </div>
             </div>
         </div>

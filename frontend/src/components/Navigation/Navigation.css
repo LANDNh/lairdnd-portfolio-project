@@ -61,6 +61,7 @@
     list-style-type: none;
     background-color: #FFFFFF;
     border: 1px solid #000000;
+    border-radius: 10px;
     filter: drop-shadow(1px 1px #000000);
     padding: .5em;
     margin-top: .25em;
@@ -76,6 +77,17 @@
     border: 2px solid #000000;
     background-color: #999999;
     padding: .5em;
+}
+
+.manage-spots {
+    text-align: center;
+    border-top: 1px solid #000000;
+    border-bottom: 1px solid #000000;
+    cursor: pointer;
+}
+
+.manage-spots:hover {
+    filter: drop-shadow(.5px .5px #000000);
 }
 
 .logout-button {

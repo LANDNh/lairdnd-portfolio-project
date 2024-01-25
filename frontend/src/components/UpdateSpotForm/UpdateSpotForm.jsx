@@ -1,29 +1,51 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { createSpot } from '../../store/spotReducer';
-import { createSpotImage } from '../../store/imageReducer';
-import './CreateSpot.css';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useEffect } from 'react';
+import { modifySpot, fetchSpot } from '../../store/spotReducer';
+import './UpdateSpot.css';
+// import { modifySpotImage } from '../../store/imageReducer';
 
-const CreateSpotForm = () => {
+const UpdateSpotForm = () => {
+    const { spotId } = useParams();
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const user = useSelector(state => state.session.user);
-    const [address, setAddress] = useState('');
-    const [city, setCity] = useState('');
-    const [state, setState] = useState('');
-    const [country, setCountry] = useState('');
-    const [lat, setLat] = useState('');
-    const [lng, setLng] = useState('');
-    const [name, setName] = useState('');
-    const [description, setDescription] = useState('');
-    const [price, setPrice] = useState('');
-    const [previewImg, setPreviewImg] = useState('');
-    const [img1, setImg1] = useState('');
-    const [img2, setImg2] = useState('');
-    const [img3, setImg3] = useState('');
-    const [img4, setImg4] = useState('');
+    const spots = useSelector(state => state.spots);
+    let spot;
+
+    useEffect(() => {
+        dispatch(fetchSpot(spotId));
+    }, [dispatch, spotId]);
+
+    spot = spots[spotId]
+
+    const [address, setAddress] = useState(spot?.address || '');
+    const [city, setCity] = useState(spot?.city || '');
+    const [state, setState] = useState(spot?.state || '');
+    const [country, setCountry] = useState(spot?.country || '');
+    const [lat, setLat] = useState('' + spot?.lat || '');
+    const [lng, setLng] = useState('' + spot?.lng || '');
+    const [name, setName] = useState(spot?.name || '');
+    const [description, setDescription] = useState(spot?.description || '');
+    const [price, setPrice] = useState('' + spot?.price || '');
+    // const [previewImg, setPreviewImg] = useState(spot?.spotImages?.slice().sort((a, b) => a.id - b.id)[0].url || '');
+    // const [img1, setImg1] = useState(spot?.spotImages?.slice().sort((a, b) => a.id - b.id)[1].url || '');
+    // const [img2, setImg2] = useState(spot?.spotImages?.slice().sort((a, b) => a.id - b.id)[2].url || '');
+    // const [img3, setImg3] = useState(spot?.spotImages?.slice().sort((a, b) => a.id - b.id)[3].url || '');
+    // const [img4, setImg4] = useState(spot?.spotImages?.slice().sort((a, b) => a.id - b.id)[4].url || '');
     const [errors, setErrors] = useState({});
+
+
+    // useEffect(() => {
+    //     if (spot) {
+    //         setPreviewImg(spot?.spotImages?.slice().sort((a, b) => a.id - b.id)[0].url || '');
+    //         setImg1(spot?.spotImages?.slice().sort((a, b) => a.id - b.id)[1].url || '');
+    //         setImg2(spot?.spotImages?.slice().sort((a, b) => a.id - b.id)[2].url || '');
+    //         setImg3(spot?.spotImages?.slice().sort((a, b) => a.id - b.id)[3].url || '');
+    //         setImg4(spot?.spotImages?.slice().sort((a, b) => a.id - b.id)[4].url || '');
+    //     }
+    // }, [spot])
 
     const handleValidation = () => {
         const formErrors = {};
@@ -89,50 +111,50 @@ const CreateSpotForm = () => {
                 formErrors.price = 'Price must be a positive number'
             }
         }
-        if (!previewImg.length) {
-            formIsValid = false;
-            formErrors.previewImg = 'Preview image is required'
-        }
-        if (previewImg.length) {
-            if (!previewImg.endsWith('.png') &&
-                !previewImg.endsWith('.jpg') &&
-                !previewImg.endsWith('.jpeg')) {
-                formIsValid = false;
-                formErrors.previewImg = 'Image URL must end in .png, .jpg, or .jpeg'
-            }
-        }
-        if (img1.length) {
-            if (!img1.endsWith('.png') &&
-                !img1.endsWith('.jpg') &&
-                !img1.endsWith('.jpeg')) {
-                formIsValid = false;
-                formErrors.img1 = 'Image URL must end in .png, .jpg, or .jpeg'
-            }
-        }
-        if (img2.length) {
-            if (!img2.endsWith('.png') &&
-                !img2.endsWith('.jpg') &&
-                !img2.endsWith('.jpeg')) {
-                formIsValid = false;
-                formErrors.img2 = 'Image URL must end in .png, .jpg, or .jpeg'
-            }
-        }
-        if (img3.length) {
-            if (!img3.endsWith('.png') &&
-                !img3.endsWith('.jpg') &&
-                !img3.endsWith('.jpeg')) {
-                formIsValid = false;
-                formErrors.img3 = 'Image URL must end in .png, .jpg, or .jpeg'
-            }
-        }
-        if (img4.length) {
-            if (!img4.endsWith('.png') &&
-                !img4.endsWith('.jpg') &&
-                !img4.endsWith('.jpeg')) {
-                formIsValid = false;
-                formErrors.img4 = 'Image URL must end in .png, .jpg, or .jpeg'
-            }
-        }
+        // if (!previewImg.length) {
+        //     formIsValid = false;
+        //     formErrors.previewImg = 'Preview image is required'
+        // }
+        // if (previewImg.length) {
+        //     if (!previewImg.endsWith('.png') &&
+        //         !previewImg.endsWith('.jpg') &&
+        //         !previewImg.endsWith('.jpeg')) {
+        //         formIsValid = false;
+        //         formErrors.previewImg = 'Image URL must end in .png, .jpg, or .jpeg'
+        //     }
+        // }
+        // if (img1.length) {
+        //     if (!img1.endsWith('.png') &&
+        //         !img1.endsWith('.jpg') &&
+        //         !img1.endsWith('.jpeg')) {
+        //         formIsValid = false;
+        //         formErrors.img1 = 'Image URL must end in .png, .jpg, or .jpeg'
+        //     }
+        // }
+        // if (img2.length) {
+        //     if (!img2.endsWith('.png') &&
+        //         !img2.endsWith('.jpg') &&
+        //         !img2.endsWith('.jpeg')) {
+        //         formIsValid = false;
+        //         formErrors.img2 = 'Image URL must end in .png, .jpg, or .jpeg'
+        //     }
+        // }
+        // if (img3.length) {
+        //     if (!img3.endsWith('.png') &&
+        //         !img3.endsWith('.jpg') &&
+        //         !img3.endsWith('.jpeg')) {
+        //         formIsValid = false;
+        //         formErrors.img3 = 'Image URL must end in .png, .jpg, or .jpeg'
+        //     }
+        // }
+        // if (img4.length) {
+        //     if (!img4.endsWith('.png') &&
+        //         !img4.endsWith('.jpg') &&
+        //         !img4.endsWith('.jpeg')) {
+        //         formIsValid = false;
+        //         formErrors.img4 = 'Image URL must end in .png, .jpg, or .jpeg'
+        //     }
+        // }
 
         setErrors(formErrors);
         return formIsValid;
@@ -142,8 +164,8 @@ const CreateSpotForm = () => {
         e.preventDefault();
 
         if (handleValidation()) {
-            const newSpot = {
-                ownerId: user.id,
+            const updatedSpot = {
+                id: spotId,
                 address,
                 city,
                 state,
@@ -155,80 +177,31 @@ const CreateSpotForm = () => {
                 price
             };
 
-            return dispatch(createSpot(newSpot))
-                .then(createdSpot => {
-                    const newPrevImage = {
-                        spotId: createdSpot.id,
-                        url: previewImg,
-                        preview: true
-                    };
-                    return dispatch(createSpotImage(createdSpot.id, newPrevImage))
-                        .then(() => {
-                            if (img1) {
-                                const newImage1 = {
-                                    spotId: createdSpot.id,
-                                    url: img1,
-                                    preview: false
-                                };
-                                dispatch(createSpotImage(createdSpot.id, newImage1))
-                            }
-                            if (img2) {
-                                const newImage2 = {
-                                    spotId: createdSpot.id,
-                                    url: img2,
-                                    preview: false
-                                };
-                                dispatch(createSpotImage(createdSpot.id, newImage2))
-                            }
-                            if (img3) {
-                                const newImage3 = {
-                                    spotId: createdSpot.id,
-                                    url: img3,
-                                    preview: false
-                                };
-                                dispatch(createSpotImage(createdSpot.id, newImage3))
-                            }
-                            if (img4) {
-                                const newImage4 = {
-                                    spotId: createdSpot.id,
-                                    url: img4,
-                                    preview: false
-                                };
-                                dispatch(createSpotImage(createdSpot.id, newImage4))
-                            }
-                            navigate(`/spots/${createdSpot.id}`)
-                        })
+            return dispatch(modifySpot(updatedSpot))
+                .then(() => {
+                    // if (previewImg) dispatch(modifySpotImage(spotId, { url: previewImg }));
+                    // if (img1) dispatch(modifySpotImage(spotId, { url: img1 }));
+                    // if (img2) dispatch(modifySpotImage(spotId, { url: img2 }));
+                    // if (img3) dispatch(modifySpotImage(spotId, { url: img3 }));
+                    // if (img4) dispatch(modifySpotImage(spotId, { url: img4 }));
+
+                    navigate(`/spots/${spotId}`)
                 })
         }
-    }
-
-    const handleTest = e => {
-        e.preventDefault();
-
-        setAddress('123 Fake Street');
-        setCity('Fake City');
-        setState('Fake State');
-        setCountry('Somewhere');
-        setLat('0');
-        setLng('0');
-        setName('Fake Place');
-        setDescription("This is a completely fake place that doesn't exist");
-        setPrice('123');
-        setPreviewImg('https://my.alfred.edu/zoom/_images/foster-lake.jpg');
-        setImg1('https://www.thewowstyle.com/wp-content/uploads/2015/07/autunm-desktop-natural-hd-wallpapers.jpg');
-        setImg2('https://images3.alphacoders.com/165/thumb-1920-165265.jpg');
-        setImg3('https://www.imagelighteditor.com/img/bg-after.jpg');
-        setImg4('https://pixy.org/src/480/4800346.jpg');
     }
 
     if (!user) {
         navigate('/');
     }
 
+    if (!spot) return <>womp womp</>
+
+    console.log(spot)
+
     return (
-        <div className='create-spot-form'>
+        <div className='update-spot-form'>
             <form onSubmit={handleSubmit} className='spot-form-els'>
-                <h1>Create a New Spot</h1>
+                <h1>Update Your Spot</h1>
                 <div className='set-location outer-container'>
                     <h2>Where&apos;s your place located?</h2>
                     <p>Guests will only get your exact address once they&apos;ve booked a reservation.</p>
@@ -344,7 +317,7 @@ const CreateSpotForm = () => {
                         {errors.price && <p className='spot-error'>{errors.price}</p>}
                     </div>
                 </div>
-                <div className='set-photo outer-container'>
+                {/* <div className='set-photo outer-container'>
                     <h2>Liven up your spot with photos</h2>
                     <p>Submit a link to at least one photo to publish your spot.</p>
                     <input
@@ -387,12 +360,11 @@ const CreateSpotForm = () => {
                     <div className='spot-label'>
                         {errors.img4 && <p className='spot-error'>{errors.img4}</p>}
                     </div>
-                </div>
-                <button>Create Spot</button>
+                </div> */}
+                <button>Update Spot</button>
             </form>
-            <button onClick={handleTest} className='test-spot'>Test Spot</button>
         </div>
     )
-}
+};
 
-export default CreateSpotForm;
+export default UpdateSpotForm;

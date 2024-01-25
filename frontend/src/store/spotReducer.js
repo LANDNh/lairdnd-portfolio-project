@@ -4,7 +4,8 @@ import { createSelector } from 'reselect';
 const LOAD_SPOTS = 'spot/loadSpots';
 const LOAD_SPOT = 'spot/loadSpot';
 const ADD_SPOT = 'spot/addSpot';
-// const ADD_SPOT_IMAGE = 'spot/addSpotImage'
+const UPDATE_SPOT = 'spot/updateSpot';
+const DELETE_SPOT = 'spot/deleteSpot';
 
 const loadSpots = spots => {
     return {
@@ -27,13 +28,19 @@ const addSpot = spot => {
     };
 };
 
-// const addSpotImage = (spotId, spotImage) => {
-//     return {
-//         type: ADD_SPOT_IMAGE,
-//         spotId,
-//         spotImage
-//     };
-// };
+const updateSpot = spot => {
+    return {
+        type: UPDATE_SPOT,
+        spot
+    };
+};
+
+const deleteSpot = spotId => {
+    return {
+        type: DELETE_SPOT,
+        spotId
+    };
+};
 
 export const fetchSpots = () => async dispatch => {
     const res = await fetch('/api/spots');
@@ -67,18 +74,31 @@ export const createSpot = spot => async dispatch => {
     }
 };
 
-// export const createSpotImage = (spotId, spotImage) => async dispatch => {
-//     const res = await csrfFetch(`api/spots/${spotId}/images`, {
-//         method: 'POST',
-//         body: JSON.stringify(spotImage)
-//     });
+export const modifySpot = spot => async dispatch => {
+    const res = await csrfFetch(`/api/spots/${spot.id}`, {
+        method: 'PUT',
+        body: JSON.stringify(spot)
+    });
 
-//     if (res.ok) {
-//         const newImage = await res.json();
-//         dispatch(addSpotImage(spotId, newImage));
-//         return newImage;
-//     }
-// }
+    if (res.ok) {
+        const updatedSpot = await res.json();
+        dispatch(updateSpot(updatedSpot));
+        return updatedSpot;
+    }
+};
+
+export const removeSpot = spotId => async dispatch => {
+    const res = await csrfFetch(`/api/spots/${spotId}`, {
+        method: 'DELETE'
+    });
+
+    if (res.ok) {
+        dispatch(deleteSpot(spotId));
+    } else {
+        const errors = await res.json();
+        return errors;
+    }
+}
 
 const selectSpots = state => state?.spots;
 
@@ -90,9 +110,9 @@ export const selectSpot = spotId => state => {
     return state?.spots ? state.spots[spotId] : null;
 };
 
-const intialState = {};
+const initialState = {};
 
-const spotReducer = (state = intialState, action) => {
+const spotReducer = (state = initialState, action) => {
     switch (action.type) {
         case LOAD_SPOTS: {
             const spotsState = {};
@@ -105,14 +125,13 @@ const spotReducer = (state = intialState, action) => {
             return { ...state, [action.spot.id]: action.spot };
         case ADD_SPOT:
             return { ...state, [action.spot.id]: action.spot };
-        // case ADD_SPOT_IMAGE:
-        //     return {
-        //         ...state,
-        //         [action.spotId]: {
-        //             ...state[action.spotId],
-        //             SpotImages: [...state[action.spotId].SpotImages, action.spotImage]
-        //         }
-        //     }
+        case UPDATE_SPOT:
+            return { ...state, [action.spot.id]: action.spot };
+        case DELETE_SPOT: {
+            const newState = { ...state };
+            delete newState[action.spotId];
+            return newState;
+        }
         default:
             return state;
     }

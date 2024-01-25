@@ -1,26 +1,26 @@
-.create-spot-form {
+.update-spot-form {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-.create-spot-form h1 {
+.update-spot-form h1 {
     align-self: start;
     margin-bottom: 0;
 }
 
-.create-spot-form input,
+.update-spot-form input,
 textarea {
     font-size: 14pt;
     background-color: #E8F0FE;
     border: 2.5px solid #000000;
 }
 
-.create-spot-form h2 {
+.update-spot-form h2 {
     margin: 1em 0 0 0;
 }
 
-.create-spot-form p {
+.update-spot-form p {
     font-size: 14pt;
 }
 
