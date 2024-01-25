@@ -202,6 +202,25 @@ const CreateSpotForm = () => {
         }
     }
 
+    const handleTest = e => {
+        e.preventDefault();
+
+        setAddress('123 Fake Street');
+        setCity('Fake City');
+        setState('Fake State');
+        setCountry('Somewhere');
+        setLat('0');
+        setLng('0');
+        setName('Fake Place');
+        setDescription("This is a completely fake place that doesn't exist");
+        setPrice('123');
+        setPreviewImg('https://my.alfred.edu/zoom/_images/foster-lake.jpg');
+        setImg1('https://www.thewowstyle.com/wp-content/uploads/2015/07/autunm-desktop-natural-hd-wallpapers.jpg');
+        setImg2('https://images3.alphacoders.com/165/thumb-1920-165265.jpg');
+        setImg3('https://www.imagelighteditor.com/img/bg-after.jpg');
+        setImg4('https://pixy.org/src/480/4800346.jpg');
+    }
+
     if (!user) {
         navigate('/');
     }
@@ -371,6 +390,7 @@ const CreateSpotForm = () => {
                 </div>
                 <button>Create Spot</button>
             </form>
+            <button onClick={handleTest} className='test-spot'>Test Spot</button>
         </div>
     )
 }

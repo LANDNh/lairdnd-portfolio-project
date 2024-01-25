@@ -10,7 +10,7 @@ function Navigation({ isLoaded }) {
         <ul className='navbar'>
             <li className='home'>
                 <NavLink to="/">
-                    <img src="../images/lairdnd-name-logo.png" alt="Lair DnD" />
+                    <img src="/images/lairdnd-name-logo.png" alt="Lair DnD" />
                 </NavLink>
             </li>
             {isLoaded && (

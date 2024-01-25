@@ -113,3 +113,11 @@
     box-shadow: 2px 2px black;
     cursor: pointer;
 }
+
+.update-delete button #text {
+    filter: none;
+}
+
+.update-delete button:hover {
+    list-style: none;
+}

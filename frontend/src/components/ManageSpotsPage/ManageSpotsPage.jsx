@@ -2,7 +2,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchSpots, selectAllSpots } from '../../store/spotReducer';
+import OpenModalMenuItem from '../Navigation/OpenModalMenuItem';
 import './ManageSpots.css';
+import DeleteSpotModal from './DeleteSpotModal';
 
 const ManageSpotsPage = () => {
     const dispatch = useDispatch();
@@ -59,7 +61,14 @@ const ManageSpotsPage = () => {
                                         e.stopPropagation();
                                         navigate(`/spots/${spot.id}/edit`)
                                     }}>Update</button>
-                                    <button>Delete</button>
+                                    <button onClick={e => {
+                                        e.stopPropagation();
+                                    }}>
+                                        <OpenModalMenuItem
+                                            itemText='Delete'
+                                            modalComponent={<DeleteSpotModal spot={spot} />}
+                                        />
+                                    </button>
                                 </div>
                             </div>
                         </div>
