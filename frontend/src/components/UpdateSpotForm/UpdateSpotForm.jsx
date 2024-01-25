@@ -2,7 +2,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
-import { modifySpot, fetchSpot, selectAllSpots } from '../../store/spotReducer';
+import { modifySpot, fetchSpot } from '../../store/spotReducer';
+import './UpdateSpot.css';
 // import { modifySpotImage } from '../../store/imageReducer';
 
 const UpdateSpotForm = () => {
@@ -10,14 +11,14 @@ const UpdateSpotForm = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const user = useSelector(state => state.session.user);
-    const spots = useSelector(selectAllSpots);
+    const spots = useSelector(state => state.spots);
     let spot;
 
     useEffect(() => {
         dispatch(fetchSpot(spotId));
     }, [dispatch, spotId]);
 
-    spot = spots[spotId - 1]
+    spot = spots[spotId]
 
     const [address, setAddress] = useState(spot?.address || '');
     const [city, setCity] = useState(spot?.city || '');
@@ -189,7 +190,7 @@ const UpdateSpotForm = () => {
         }
     }
 
-    if (!user || user.id !== spot?.ownerId) {
+    if (!user) {
         navigate('/');
     }
 
@@ -198,7 +199,7 @@ const UpdateSpotForm = () => {
     console.log(spot)
 
     return (
-        <div className='create-spot-form'>
+        <div className='update-spot-form'>
             <form onSubmit={handleSubmit} className='spot-form-els'>
                 <h1>Update Your Spot</h1>
                 <div className='set-location outer-container'>
