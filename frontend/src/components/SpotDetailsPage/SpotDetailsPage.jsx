@@ -90,7 +90,7 @@ const SpotDetailsPage = () => {
                             </span>
                         )}
                     </h2>
-                    {spotId && spot.ownerId !== user.id && (
+                    {spotId && user && spot.ownerId !== user?.id && (
                         <button className='new-review'
                             onClick={e => {
                                 e.stopPropagation();
@@ -102,7 +102,7 @@ const SpotDetailsPage = () => {
                         </button>
                     )}
                     {
-                        reviews && Object.values(reviews).length === 0 && spot.ownerId !== user.id ? (
+                        reviews && Object.values(reviews).length === 0 && spot.ownerId !== user?.id ? (
                             <p>Be the first to review!</p>
                         ) : (
                             Object.values(reviews).sort((a, b) => b.id - a.id).map(review => {
@@ -113,7 +113,7 @@ const SpotDetailsPage = () => {
                                         <p className='review-name'>{review.User?.firstName}</p>
                                         <p className='review-date'>{formatedDate}</p>
                                         <p className='review-text'>{review.review}</p>
-                                        {review.userId === user.id && (
+                                        {review.userId === user?.id && (
                                             <div>
                                                 <button className='review-delete'
                                                     onClick={e => {
