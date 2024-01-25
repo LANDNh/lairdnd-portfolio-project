@@ -150,6 +150,10 @@
     align-self: start;
 }
 
+.spot-reviews h2 {
+    margin: .5em 0;
+}
+
 .review {
     margin-bottom: 1em;
     padding-bottom: 1em;
@@ -173,4 +177,15 @@
     border: 2px solid #000000;
     box-shadow: 2px 2px #000000;
     cursor: pointer;
+}
+
+.new-review {
+    list-style: none;
+    font-size: 14pt;
+    color: #FFFFFF;
+    background-color: #999999;
+    border: 2px solid #000000;
+    box-shadow: 2px 2px #000000;
+    cursor: pointer;
+    margin-bottom: 1em;
 }

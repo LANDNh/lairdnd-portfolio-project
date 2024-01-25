@@ -3,8 +3,8 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchSpots, selectAllSpots } from '../../store/spotReducer';
 import OpenModalMenuItem from '../Navigation/OpenModalMenuItem';
+import DeleteSpotModal from '../DeleteSpotModal';
 import './ManageSpots.css';
-import DeleteSpotModal from './DeleteSpotModal';
 
 const ManageSpotsPage = () => {
     const dispatch = useDispatch();
