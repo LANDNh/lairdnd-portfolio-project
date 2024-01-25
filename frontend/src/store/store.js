@@ -4,12 +4,14 @@ import sessionReducer from './session';
 import spotReducer from './spotReducer';
 import imageReducer from './imageReducer';
 import reviewReducer from './reviewReducer';
+import reviewSubmittedReducer from './reviewSubmitted';
 
 const rootReducer = combineReducers({
     session: sessionReducer,
     spots: spotReducer,
     images: imageReducer,
-    reviews: reviewReducer
+    reviews: reviewReducer,
+    reviewSubmitted: reviewSubmittedReducer
 });
 
 let enhancer;

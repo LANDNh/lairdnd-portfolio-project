@@ -7,6 +7,7 @@ import DeleteReviewModal from '../DeleteReviewModal';
 import OpenModalMenuItem from '../Navigation/OpenModalMenuItem';
 import CreateReviewModal from '../CreateReviewModal';
 import './SpotDetails.css';
+import { setReviewSubmitted } from '../../store/reviewSubmitted';
 
 const SpotDetailsPage = () => {
     const { spotId } = useParams();
@@ -14,6 +15,7 @@ const SpotDetailsPage = () => {
     const user = useSelector(state => state.session.user);
     const spot = useSelector(selectSpot(spotId));
     const reviews = useSelector(state => state.reviews);
+    const reviewSubmitted = useSelector(state => state.reviewSubmitted);
 
     useEffect(() => {
         dispatch(fetchSpot(spotId));
@@ -21,7 +23,10 @@ const SpotDetailsPage = () => {
 
     useEffect(() => {
         dispatch(fetchSpotReviews(spotId));
-    }, [dispatch, spotId])
+        if (reviewSubmitted) {
+            dispatch(setReviewSubmitted(false));
+        }
+    }, [dispatch, spotId, reviewSubmitted])
 
     if (!spot) {
         return <div>womp womp</div>

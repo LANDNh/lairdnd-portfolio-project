@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useModal } from '../../context/Modal';
 import { createReview } from '../../store/reviewReducer';
 import './CreateReview.css';
+import { setReviewSubmitted } from '../../store/reviewSubmitted';
 
 const Star = ({ selected, onClick }) => (
     <span className={selected ? 'star selected' : 'star'} onClick={onClick}>
@@ -30,6 +31,9 @@ const CreateReviewModal = ({ spotId }) => {
         }
 
         return dispatch(createReview(spotId, newReview))
+            .then(() => {
+                dispatch(setReviewSubmitted(true));
+            })
             .then(closeModal)
             .catch(async res => {
                 const data = await res.json();

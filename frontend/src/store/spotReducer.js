@@ -110,9 +110,9 @@ export const selectSpot = spotId => state => {
     return state?.spots ? state.spots[spotId] : null;
 };
 
-const intialState = {};
+const initialState = {};
 
-const spotReducer = (state = intialState, action) => {
+const spotReducer = (state = initialState, action) => {
     switch (action.type) {
         case LOAD_SPOTS: {
             const spotsState = {};
