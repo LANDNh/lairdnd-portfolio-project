@@ -60,7 +60,7 @@ const ManageSpotsPage = () => {
                                     <p className='price'>${spot.price}</p>
                                     night
                                 </div>
-                                <div className='update-delete no-navigate'>
+                                <div className='update-delete'>
                                     <button
                                         className='no-navigate'
                                         onClick={() => {

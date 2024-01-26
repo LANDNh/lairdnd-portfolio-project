@@ -90,17 +90,18 @@ const SpotDetailsPage = () => {
                             </span>
                         )}
                     </h2>
-                    {spotId && user && spot.ownerId !== user?.id && (
-                        <button className='new-review'
-                            onClick={e => {
-                                e.stopPropagation();
-                            }}>
-                            <OpenModalMenuItem
-                                itemText='Post Your Review'
-                                modalComponent={<CreateReviewModal spotId={spotId} />}
-                            />
-                        </button>
-                    )}
+                    {
+                        spotId && user && spot.ownerId !== user?.id && !Object.values(reviews)?.find(review => review.userId === user?.id) && (
+                            <button className='new-review'
+                                onClick={e => {
+                                    e.stopPropagation();
+                                }}>
+                                <OpenModalMenuItem
+                                    itemText='Post Your Review'
+                                    modalComponent={<CreateReviewModal spotId={spotId} />}
+                                />
+                            </button>
+                        )}
                     {
                         reviews && Object.values(reviews).length === 0 && spot.ownerId !== user?.id ? (
                             <p>Be the first to review!</p>
