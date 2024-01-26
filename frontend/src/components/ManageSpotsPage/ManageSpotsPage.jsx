@@ -23,6 +23,12 @@ const ManageSpotsPage = () => {
         navigate('/spots/new')
     }
 
+    const handleClick = (e, spotId) => {
+        if (!e.target.closest('.no-navigate')) {
+            navigate(`/spots/${spotId}`);
+        }
+    }
+
     return (
         <>
             <div className='manage-header'>
@@ -34,9 +40,7 @@ const ManageSpotsPage = () => {
                     {spots && filteredSpots.map(spot => (
                         <div
                             className='spot-tile'
-                            onClick={() => {
-                                navigate(`/spots/${spot.id}`)
-                            }}
+                            onClick={e => handleClick(e, spot.id)}
                             key={spot.id}
                         >
                             <div className='spot-prev'>
@@ -56,14 +60,13 @@ const ManageSpotsPage = () => {
                                     <p className='price'>${spot.price}</p>
                                     night
                                 </div>
-                                <div className='update-delete'>
-                                    <button onClick={e => {
-                                        e.stopPropagation();
-                                        navigate(`/spots/${spot.id}/edit`)
-                                    }}>Update</button>
-                                    <button onClick={e => {
-                                        e.stopPropagation();
-                                    }}>
+                                <div className='update-delete no-navigate'>
+                                    <button
+                                        className='no-navigate'
+                                        onClick={() => {
+                                            navigate(`/spots/${spot.id}/edit`)
+                                        }}>Update</button>
+                                    <button className='no-navigate'>
                                         <OpenModalMenuItem
                                             itemText='Delete'
                                             modalComponent={<DeleteSpotModal spot={spot} />}
