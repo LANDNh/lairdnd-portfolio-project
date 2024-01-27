@@ -100,6 +100,7 @@
 .reserve {
     font-size: 14pt;
     width: 15em;
+    height: min-content;
     box-sizing: content-box;
     padding: 1em;
     padding-top: .5em;

@@ -106,7 +106,7 @@ const SignupFormModal = () => {
                 </span>
                 <span>
                     <input
-                        type="text"
+                        type="password"
                         value={password}
                         placeholder="Password"
                         onChange={e => setPassword(e.target.value)}
@@ -115,7 +115,7 @@ const SignupFormModal = () => {
                 </span>
                 <span>
                     <input
-                        type="text"
+                        type="password"
                         value={confirmPassword}
                         placeholder="Confirm Password"
                         onChange={e => setConfirmPassword(e.target.value)}

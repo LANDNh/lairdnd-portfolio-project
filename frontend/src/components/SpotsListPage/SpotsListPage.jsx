@@ -35,7 +35,7 @@ const SpotsListPage = () => {
                             <p>{spot.city}, {spot.state}</p>
                             <p className='spot-rating'>
                                 <i className='fas fa-star'></i>
-                                {spot.avgRating?.toFixed(1) || 'New'}
+                                {parseFloat(spot.avgRating?.toFixed(2)) || 'New'}
                             </p>
                             <div className='price-per-night'>
                                 <p className='price'><i className="fa-solid fa-coins"></i>{spot.price}</p>

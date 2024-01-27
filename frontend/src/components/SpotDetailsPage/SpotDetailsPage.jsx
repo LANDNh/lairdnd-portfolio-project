@@ -71,7 +71,7 @@ const SpotDetailsPage = () => {
                         <div className='review-preview'>
                             <p className='avg-review'>
                                 <i className='fas fa-star'></i>
-                                {spot.avgStarRating || 'New'} {spot.numReviews !== 0 && (
+                                {parseFloat(spot.avgStarRating?.toFixed(2)) || 'New'} {spot.numReviews !== 0 && (
                                     <span>
                                         · {spot.numReviews} {spot.numReviews === 1 ? 'review' : 'reviews'}
                                     </span>
@@ -84,7 +84,7 @@ const SpotDetailsPage = () => {
                 <div className='spot-reviews'>
                     <h2>
                         <i className='fas fa-star'></i>
-                        {spot.avgStarRating || 'New'} {spot.numReviews !== 0 && (
+                        {parseFloat(spot.avgStarRating?.toFixed(2)) || 'New'} {spot.numReviews !== 0 && (
                             <span>
                                 · {spot.numReviews} {spot.numReviews === 1 ? 'review' : 'reviews'}
                             </span>
