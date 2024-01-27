@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { fetchSpot, selectSpot } from '../../store/spotReducer';
 import { fetchSpotReviews } from '../../store/reviewReducer';
 import DeleteReviewModal from '../DeleteReviewModal';
@@ -16,126 +16,159 @@ const SpotDetailsPage = () => {
     const spot = useSelector(selectSpot(spotId));
     const reviews = useSelector(state => state.reviews);
     const reviewSubmitted = useSelector(state => state.reviewSubmitted);
+    const [isLoading, setIsLoading] = useState(true);
+    const [notFound, setNotFound] = useState(false);
 
     useEffect(() => {
-        dispatch(fetchSpot(spotId));
-    }, [dispatch, spotId, reviews]);
+        const timer = setTimeout(() => {
+            if (isLoading && !spot) {
+                setNotFound(true);
+            }
+        }, 5000);
+        return () => clearTimeout(timer);
+    }, [isLoading, spot]);
+
+    useEffect(() => {
+        if (isLoading) {
+            dispatch(fetchSpot(spotId))
+                .then(() => {
+                    setIsLoading(false);
+                })
+        }
+    }, [dispatch, isLoading, spotId, reviews]);
+
+    useEffect(() => {
+        if (!isLoading && !spot) {
+            setNotFound(true);
+        }
+    }, [isLoading, spot])
 
     useEffect(() => {
         dispatch(fetchSpotReviews(spotId));
         if (reviewSubmitted) {
             dispatch(setReviewSubmitted(false));
         }
-    }, [dispatch, spotId, reviewSubmitted])
+    }, [dispatch, spotId, reviewSubmitted]);
 
-    if (!spot) {
-        return <div>womp womp</div>
+    if (notFound) {
+        return <div className='no-spot-found'>404 Spot Not Found</div>
     }
 
-    return (
-        <div className='pseudo-root'>
-            <div className='spot-details'>
-                <div className='heading'>
-                    <h1>{spot.name}</h1>
-                    <p>{`${spot.city}, ${spot.state}, ${spot.country}`}</p>
-                </div>
-                <div className='pictures'>
-                    {spot.SpotImages?.map(image => {
-                        if (image.preview === true) {
-                            return (
-                                <div className='prev-img-container' key={image.id}>
-                                    <img src={image.url} className='preview-image' />
-                                </div>
-                            )
-                        }
-                    })}
-                    <div className='reg-img-container'>
+    if (isLoading) {
+        return (
+            <div className='loading-container'>
+                <div className='spinner'></div>
+                <p>Loading spot details, please wait...</p>
+            </div>
+        );
+    }
+
+    if (spot) {
+        return (
+            <div className='pseudo-root'>
+                <div className='spot-details'>
+                    <div className='heading'>
+                        <h1>{spot.name}</h1>
+                        <p>{`${spot.city}, ${spot.state}, ${spot.country}`}</p>
+                    </div>
+                    <div className='pictures'>
                         {spot.SpotImages?.map(image => {
-                            if (image.preview === false) {
+                            if (image.preview === true) {
                                 return (
-                                    <img src={image.url} className='reg-image' key={image.id} />
+                                    <div className='prev-img-container' key={image.id}>
+                                        <img src={image.url} className='preview-image' />
+                                    </div>
                                 )
                             }
                         })}
-                    </div>
-                </div>
-                <div className='spot-info'>
-                    <div className='details'>
-                        <h2>Hosted by {spot.Owner?.firstName} {spot.Owner?.lastName}</h2>
-                        <p>{spot.description}</p>
-                    </div>
-                    <div className='reserve'>
-                        <div className='reserve-price'>
-                            <i className="fa-solid fa-coins"></i> {spot.price} night
+                        <div className='reg-img-container'>
+                            {spot.SpotImages?.map(image => {
+                                if (image.preview === false) {
+                                    return (
+                                        <img src={image.url} className='reg-image' key={image.id} />
+                                    )
+                                }
+                            })}
                         </div>
-                        <div className='review-preview'>
-                            <p className='avg-review'>
-                                <i className='fas fa-star'></i>
-                                {parseFloat(spot.avgStarRating?.toFixed(2)) || 'New'} {spot.numReviews !== 0 && (
-                                    <span>
-                                        · {spot.numReviews} {spot.numReviews === 1 ? 'review' : 'reviews'}
-                                    </span>
-                                )}
-                            </p>
-                        </div>
-                        <button onClick={() => window.alert('Feature Coming Soon...')}>Reserve</button>
                     </div>
-                </div>
-                <div className='spot-reviews'>
-                    <h2>
-                        <i className='fas fa-star'></i>
-                        {parseFloat(spot.avgStarRating?.toFixed(2)) || 'New'} {spot.numReviews !== 0 && (
-                            <span>
-                                · {spot.numReviews} {spot.numReviews === 1 ? 'review' : 'reviews'}
-                            </span>
-                        )}
-                    </h2>
-                    {
-                        spotId && user && spot.ownerId !== user?.id && !Object.values(reviews)?.find(review => review.userId === user?.id) && (
-                            <button className='new-review'
-                                onClick={e => {
-                                    e.stopPropagation();
-                                }}>
-                                <OpenModalMenuItem
-                                    itemText='Post Your Review'
-                                    modalComponent={<CreateReviewModal spotId={spotId} />}
-                                />
-                            </button>
-                        )}
-                    {
-                        reviews && Object.values(reviews).length === 0 && spot.ownerId !== user?.id ? (
-                            <p>Be the first to review!</p>
-                        ) : (
-                            Object.values(reviews).sort((a, b) => b.id - a.id).map(review => {
-                                const date = new Date(review.createdAt);
-                                const formatedDate = date.toLocaleString('default', { month: 'long', year: 'numeric' });
-                                return (
-                                    <div className='review' key={review.id}>
-                                        <p className='review-name'>{review.User?.firstName}</p>
-                                        <p className='review-date'>{formatedDate}</p>
-                                        <p className='review-text'>{review.review}</p>
-                                        {review.userId === user?.id && (
-                                            <div>
-                                                <button className='review-delete'
-                                                    onClick={e => {
-                                                        e.stopPropagation();
-                                                    }}>
-                                                    <OpenModalMenuItem
-                                                        itemText='Delete'
-                                                        modalComponent={<DeleteReviewModal review={review} />}
-                                                    />
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
-                                )
-                            })
-                        )
-                    }
+                    <div className='spot-info'>
+                        <div className='details'>
+                            <h2>Hosted by {spot.Owner?.firstName} {spot.Owner?.lastName}</h2>
+                            <p>{spot.description}</p>
+                        </div>
+                        <div className='reserve'>
+                            <div className='reserve-price'>
+                                <i className="fa-solid fa-coins"></i> {spot.price} night
+                            </div>
+                            <div className='review-preview'>
+                                <p className='avg-review'>
+                                    <i className='fas fa-star'></i>
+                                    {parseFloat(spot.avgStarRating?.toFixed(2)) || 'New'} {spot.numReviews !== 0 && (
+                                        <span>
+                                            · {spot.numReviews} {spot.numReviews === 1 ? 'review' : 'reviews'}
+                                        </span>
+                                    )}
+                                </p>
+                            </div>
+                            <button onClick={() => window.alert('Feature Coming Soon...')}>Reserve</button>
+                        </div>
+                    </div>
+                    <div className='spot-reviews'>
+                        <h2>
+                            <i className='fas fa-star'></i>
+                            {parseFloat(spot.avgStarRating?.toFixed(2)) || 'New'} {spot.numReviews !== 0 && (
+                                <span>
+                                    · {spot.numReviews} {spot.numReviews === 1 ? 'review' : 'reviews'}
+                                </span>
+                            )}
+                        </h2>
+                        {
+                            spotId && user && spot.ownerId !== user?.id && !Object.values(reviews)?.find(review => review.userId === user?.id) && (
+                                <button className='new-review'
+                                    onClick={e => {
+                                        e.stopPropagation();
+                                    }}>
+                                    <OpenModalMenuItem
+                                        itemText='Post Your Review'
+                                        modalComponent={<CreateReviewModal spotId={spotId} />}
+                                    />
+                                </button>
+                            )}
+                        {
+                            reviews && Object.values(reviews).length === 0 && spot.ownerId !== user?.id ? (
+                                <p>Be the first to review!</p>
+                            ) : (
+                                Object.values(reviews).sort((a, b) => b.id - a.id).map(review => {
+                                    const date = new Date(review.createdAt);
+                                    const formatedDate = date.toLocaleString('default', { month: 'long', year: 'numeric' });
+                                    return (
+                                        <div className='review' key={review.id}>
+                                            <p className='review-name'>{review.User?.firstName}</p>
+                                            <p className='review-date'>{formatedDate}</p>
+                                            <p className='review-text'>{review.review}</p>
+                                            {review.userId === user?.id && (
+                                                <div>
+                                                    <button className='review-delete'
+                                                        onClick={e => {
+                                                            e.stopPropagation();
+                                                        }}>
+                                                        <OpenModalMenuItem
+                                                            itemText='Delete'
+                                                            modalComponent={<DeleteReviewModal review={review} />}
+                                                        />
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )
+                                })
+                            )
+                        }
+                    </div>
                 </div>
             </div>
-        </div>
-    )
+        )
+    }
 }
 
 export default SpotDetailsPage;
