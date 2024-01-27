@@ -196,8 +196,6 @@ const UpdateSpotForm = () => {
 
     if (!spot) return <>womp womp</>
 
-    console.log(spot)
-
     return (
         <div className='update-spot-form'>
             <form onSubmit={handleSubmit} className='spot-form-els'>
